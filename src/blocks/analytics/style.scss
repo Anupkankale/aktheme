@@ -1,0 +1,65 @@
+/* AK Image + Bullet List (ak/analytics). Root element: .ak-section.analytics */
+.ak-section.analytics { padding: 32px 0 46px; }
+
+.ak-section .an-grid {
+	display: grid;
+	grid-template-columns: 580px minmax(0, 1fr);
+	gap: 35px;
+	align-items: start;
+	padding-left: 37px;
+}
+
+.ak-section .an-visual img { width: 100%; } /* the picture draws its own card: no second frame or shadow around it (UI review) */
+
+.ak-section.analytics .title { margin-bottom: 16px; font-size: clamp(1.625rem, 1.0357rem + 1.4881vw, 2.375rem); font-weight: 600; } /* → 38px */
+.ak-section .dots {
+	display: grid;
+	gap: 24px;
+	margin-bottom: 24px;
+}
+
+.ak-section .dots li {
+	position: relative;
+	padding-left: 18px;
+	font-size: 1.03125rem; /* 16.5px */
+	line-height: 1.42;
+	color: #000;
+}
+
+.ak-section .dots li::before {
+	content: "·";
+	position: absolute;
+	left: 2px;
+	top: 0;
+	font-weight: 700;
+}
+
+@media (max-width: 1200px) {
+
+	.ak-section .an-grid { grid-template-columns: 1fr 1fr; padding-left: 0; }
+}
+
+@media (max-width: 900px) {
+
+	.ak-section .an-grid { grid-template-columns: 1fr; }
+}
+
+/* Phones: every .section gets the same vertical rhythm (overrides the padding above). */
+@media (max-width: 640px) {
+
+	.ak-section.analytics { padding: 48px 0; }
+}
+
+/* One column: centred header and button; the bullet list stays left-aligned */
+@media (max-width: 900px) {
+
+	.ak-section .an-grid { padding-left: 0; }
+
+	.ak-section.analytics .wp-block-buttons { justify-content: center; }
+}
+
+/* Phones: the text only, without the dashboard image (UI review) */
+@media (max-width: 640px) {
+
+	.ak-section .an-visual { display: none; }
+}

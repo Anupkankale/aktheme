@@ -1,0 +1,54 @@
+/* Page rhythm for every page except Home (Home has its own, in _home-rhythm.scss): one breathing room above and below
+   every content section, on every device, instead of a different padding per section. The hero, the sub-navigation
+   and the boxed banners (fee, achievements, cyber, wide highlights) keep their own spacing. Tokens only. */
+$page: ":is(.wp-block-post-content, .ak-page-content):not(:has(> .ak-section.hero.is-style-home))"; /* page content, or an AK page template's <main> */
+
+#{$page} { --ak-section-y: var(--wp--preset--spacing--48); }
+
+@media (max-width: 1024px) {
+
+	#{$page} { --ak-section-y: var(--wp--preset--spacing--40); }
+}
+
+@media (max-width: 640px) {
+
+	#{$page} { --ak-section-y: var(--wp--preset--spacing--32); }
+}
+
+#{$page} > .ak-section:is(.section, .highlights, .cta-wrap) { padding-block: var(--ak-section-y); }
+
+/* Section headers: eyebrow, title and intro sit 8px apart, and the header is always 32px above the section's content
+   (it ranged from 8px to 74px, block by block). */
+#{$page} > .ak-section :is(.sec-head, .testi-head) > * { margin-block: 0; }
+
+#{$page} > .ak-section :is(.sec-head, .testi-head) > * + * { margin-top: var(--wp--preset--spacing--8); }
+
+#{$page} > .ak-section :is(.sec-head, .testi-head) > :is(.eyebrow-line, .alumni-eyebrow) + * { margin-top: var(--wp--custom--eyebrow--gap); } /* see base.scss */
+
+#{$page} > .ak-section :is(.sec-head, .testi-head) { margin-bottom: var(--wp--preset--spacing--32); }
+
+#{$page} > .ak-section :is(.sec-head, .testi-head) + * { margin-top: 0; }
+
+/* Boxed banners take their room from the sections around them (48px each side), not from margins of their own; after a
+   coloured band they keep the same 48px off its edge. */
+#{$page} > .ak-section:is(.cost-banner, .cyber, .achieve) { margin-block: 0; }
+
+/* Next to a coloured band (or another banner) there is no section padding to lean on, so the banner keeps 48px off it
+   (the fee banner's ribbon also rises 23px above the card). */
+#{$page} > .ak-section:is(.highlights.is-style-wide, .specs, .is-band, .hero, .cost-banner, .cyber, .achieve) + .ak-section:is(.cost-banner, .cyber, .achieve) { margin-top: var(--ak-section-y); }
+
+#{$page} > .ak-section:is(.cost-banner, .cyber, .achieve):has(+ .ak-section:is(.highlights.is-style-wide, .specs, .is-band)) { margin-bottom: var(--ak-section-y); }
+
+/* The fee banner's ribbon stands above the card: the room is measured from the ribbon's top, not the card's. */
+@media (min-width: 901px) {
+
+	#{$page} > .ak-section:is(.highlights.is-style-wide, .specs, .is-band, .hero, .cost-banner, .cyber, .achieve) + .ak-section.cost-banner { margin-top: calc(var(--ak-section-y) + var(--wp--preset--spacing--24)); }
+}
+
+#{$page} > .ak-section:is(.cost-banner, .cyber, .achieve) + .ak-section:not(.section) { margin-top: var(--ak-section-y); }
+
+/* The banner already separates the two sections: no divider line hard against its bottom edge. */
+#{$page} > .ak-section:is(.cost-banner, .cyber, .achieve) + .ak-section.section { border-top: 0; }
+
+/* A boxed CTA card after a section: the section's own bottom padding is the gap, not twice the rhythm (UI review) */
+#{$page} > .ak-section.section + .ak-section.cta-wrap.is-wide { padding-top: 0; }

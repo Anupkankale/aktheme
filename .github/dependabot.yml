@@ -1,0 +1,50 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: '/'
+    schedule:
+      interval: monthly
+      time: '00:00'
+      timezone: 'Asia/Calcutta'
+    open-pull-requests-limit: 10
+    labels:
+      - GHA
+      - Dependencies
+
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: monthly
+      time: '00:00'
+      timezone: 'Asia/Calcutta'
+    open-pull-requests-limit: 10
+    labels:
+      - NPM
+      - Dependencies
+    groups:
+      wordpress-packages:
+        patterns:
+          - "@wordpress/*"
+    ignore:
+      # Babel 8 is a major; the WordPress build tooling (@wordpress/scripts,
+      # @wordpress/babel-preset-default) is still on Babel 7.
+      - dependency-name: "@babel/core"
+        update-types: ["version-update:semver-major"]
+      # @rtcamp/eslint-config 1.x peers on @wordpress/eslint-plugin <=27, and
+      # @wordpress/scripts 37 pulls in eslint-plugin 28, so `npm ci` fails with
+      # ERESOLVE. Hold both majors until @rtcamp/eslint-config supports 28.
+      - dependency-name: "@wordpress/eslint-plugin"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@wordpress/scripts"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: composer
+    directory: '/'
+    schedule:
+      interval: monthly
+      time: '00:00'
+      timezone: 'Asia/Calcutta'
+    open-pull-requests-limit: 10
+    labels:
+      - Composer
+      - Dependencies

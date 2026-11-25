@@ -1,0 +1,38 @@
+### WordPress ###
+
+# Core
+/wordpress/
+
+# macOS/IDE
+.DS_Store
+.idea
+.vscode
+
+# Log files
+*.log
+/tests/logs
+
+# Packages
+/vendor/
+/node_modules/
+
+# Enviroment
+.env
+.env.local
+.wp-env.override.json
+.wp-env.tests.override.json
+
+# Build
+assets/build/
+
+# PHPCS
+phpcs.xml
+
+# Cache
+.phpunit.result.cache
+
+# Tailwind theme
+_tailwind-theme.css
+
+# Playwright browser test results and report (npm run test:e2e)
+/artifacts/e2e/

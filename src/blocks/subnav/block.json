@@ -1,0 +1,39 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "ak/subnav",
+	"title": "AK Section Navigation",
+	"category": "ak",
+	"icon": "menu",
+	"description": "Sticky bar with links to sections on the page (highlights the section in view).",
+	"keywords": [
+		"ak",
+		"section"
+	],
+	"version": "1.0.0",
+	"textdomain": "aktheme",
+	"supports": {
+		"anchor": true,
+		"html": false,
+		"align": [
+			"full"
+		]
+	},
+	"attributes": {
+		"align": {
+			"type": "string",
+			"default": "full"
+		}
+	},
+	"ak": {
+		"tagName": "nav",
+		"className": "subnav",
+		"anchor": "subnav"
+	},
+	"editorScript": "file:./index.js",
+	"style": [
+		"ak-base",
+		"file:./style-index.css"
+	],
+	"viewScript": "file:./view.js"
+}

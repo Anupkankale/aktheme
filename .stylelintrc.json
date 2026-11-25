@@ -1,0 +1,41 @@
+{
+	"extends": "@rtcamp/stylelint-config",
+	"ignoreFiles": [
+		"**/*.js",
+		"**/*.json",
+		"**/*.php"
+	],
+	"rules": {
+		"scss/at-rule-no-unknown": [
+			true,
+			{
+				"ignoreAtRules": [
+					"tailwind",
+					"apply",
+					"layer",
+					"config",
+					"plugin",
+					"source",
+					"theme",
+					"utility",
+					"variant",
+					"custom-variant",
+					"reference"
+				]
+			}
+		]
+	},
+	"overrides": [
+		{
+			"files": [
+				"src/blocks/**/*.scss",
+				"src/blocks-shared/**/*.scss"
+			],
+			"rules": {
+				"no-descending-specificity": null,
+				"selector-class-pattern": null,
+				"no-duplicate-selectors": null
+			}
+		}
+	]
+}

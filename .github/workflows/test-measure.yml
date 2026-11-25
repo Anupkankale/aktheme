@@ -1,0 +1,34 @@
+name: Test and Measure
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - ready_for_review
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: rtCamp/wp-shared-workflows/.github/workflows/wp-ci.yml@v1
+    with:
+      project-type: theme
+      enable-phpstan: true
+      # Trimmed from PHP 8.2-8.4 x WordPress 6.5-7.0 (18 jobs): the site runs PHP 8.2, and the theme requires WordPress 6.6+,
+      # so test the oldest supported WordPress and the newest one on PHP 8.2.
+      php-versions: '["8.2"]'
+      wp-versions: '["6.6", "7.0"]'
+
+      # Optional wp-ci inputs, upstream defaults — uncomment to change.
+      # skip: ''                # lint-css,lint-js,lint-php,test-js,test-php,build,build-artifact,a11y
+      # run-a11y: false         # or: ${{ contains(github.event.pull_request.labels.*.name, 'Run a11y') }}
+      # use-wp-env: true        # false = standalone PHPUnit, no WordPress
+      # build-artifact-path: '' # installable dir the build emits; empty skips the install test
+      # build-artifact-slug: '' # empty = repo name (aktheme)
+      # Jobs also gate on changed files: no .php changes = no lint-php.

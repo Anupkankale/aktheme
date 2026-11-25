@@ -1,0 +1,96 @@
+/* AK Achievements (ak/achievements). Root element: .ak-section.achieve
+   Figma: a rounded navy card the width of the container (1200 × 178px): title | divider | 4 counters. */
+
+/* Boxed band: its own width, not the page's content-size cap. (The block editor's root rule is as specific as a plain
+   section selector, so this one is a class higher.) */
+.is-layout-constrained > .ak-section.achieve { max-width: none; }
+
+.ak-section.achieve {
+	position: relative;
+	overflow: hidden;
+	--achieve-width: min(1200px, 100% + 2 * var(--wp--style--root--padding-left, 0px) - 40px); /* 100% is the padded content box inside the theme */
+
+	width: var(--achieve-width);
+	left: min(0px, calc((100% - var(--achieve-width)) / 2)); /* wider than the padded box (below 1240px): shift it so both screen gutters are 20px, like the fee banner */
+	min-height: var(--wp--custom--size--135); /* a shorter box (UI review) */
+	margin: 0 auto 38px;
+	display: flex;
+	align-items: center;
+	border-radius: 16px;
+	background: var(--navy-band);
+	color: #fff;
+}
+
+/* Soft circles (decoration) */
+.ak-section.achieve::before,
+.ak-section.achieve::after {
+	content: "";
+	position: absolute;
+	border-radius: 50%;
+	pointer-events: none;
+}
+
+.ak-section.achieve::before { width: 200px; height: 200px; left: 120px; bottom: -110px; background: rgba(255, 255, 255, .035); }
+
+.ak-section.achieve::after { width: 170px; height: 170px; right: 70px; top: -20px; background: #1c3a78; opacity: .55; }
+
+.ak-section .achieve-inner {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	gap: 60px;
+	width: 100%;
+	padding: 24px 40px;
+}
+
+.ak-section.achieve h2 {
+	flex-shrink: 0;
+	padding-right: 40px;
+	border-right: 1.5px solid rgba(255, 255, 255, .5);
+	color: #fff;
+	font-size: clamp(1.75rem, 1.0357rem + 1.4881vw, 2.375rem); /* 28px → 38px */
+	font-weight: 600;
+	line-height: 1.3;
+}
+
+.ak-section .achieve-stats { display: flex; gap: 24px 64px; flex-wrap: wrap; }
+
+/* Desktop: one row; the gap narrows below 1440px (64px → ~40px) instead of wrapping a counter to a second line. */
+@media (min-width: 1101px) {
+
+	.ak-section .achieve-stats { flex-wrap: nowrap; column-gap: clamp(32px, -40px + 7.2222vw, 64px); }
+}
+
+.ak-section .achieve-stats .stat { display: flex; flex-direction: column; }
+
+.ak-section .count {
+	color: #f4b740;
+	font-size: clamp(1.75rem, 1.0714rem + 1.4137vw, 2.34375rem); /* 28px → 37.5px */
+	font-weight: 600;
+	line-height: 1.1;
+}
+
+.ak-section .count-label { color: #fff; font-size: 1rem; font-weight: 400; line-height: 1.3; }
+
+@media (max-width: 1100px) {
+
+	.ak-section .achieve-inner { flex-direction: column; align-items: flex-start; gap: 24px; }
+
+	.ak-section.achieve h2 { border-right: 0; padding-right: 0; }
+
+	.ak-section .achieve-stats { width: 100%; }
+}
+
+/* Stacked: centred title, stats in a centred row (2 × 2 on phones) */
+@media (max-width: 1100px) {
+
+	.ak-section .achieve-inner { align-items: center; text-align: center; }
+
+	.ak-section .achieve-stats { justify-content: center; }
+}
+
+@media (max-width: 640px) {
+
+	.ak-section .achieve-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 16px; }
+}

@@ -1,0 +1,164 @@
+@use 'sass:meta';
+
+/* Shared by every AK section block (loaded once, as a dependency of each block style).
+   Figma: Your Company – online-doctorate-programs. Everything is scoped to .ak-section (the root element of
+   every block), so the theme header/footer and other content are untouched. */
+
+/* Fonts (Montserrat, Inter) and their metric-matched fallbacks are self-hosted and registered by the AK theme
+   (theme.json fontFace + theme stylesheet); the blocks only use them through the preset variables below. */
+html:has(.ak-section) { scroll-behavior: smooth; }
+
+/* Design tokens + typography on each section root. */
+.ak-section {
+	--navy: #15294e;
+	--navy-deep: #031a43;
+	--navy-band: #192d52;
+	--gold: #cf9123;
+	--gold-soft: #f3e2c4;
+	--green: #11aa63;
+	--blue: #4a79fb;
+	--ink: #000;
+	--text: #1c1c1c;
+	--text-navy: #1a2b5e;
+	--muted: #555;
+	--line: #e4e4e4;
+	--card: #f5f5f5;
+	--lavender: #eaebff;
+	--peach: #fef3e1;
+	--radius: 14px;
+	--head: var(--wp--preset--font-family--montserrat, "Montserrat", "Montserrat Fallback", system-ui, sans-serif);
+	--ui: var(--wp--preset--font-family--inter, "Inter", "Inter Fallback", system-ui, sans-serif);
+	font-family: var(--ui); /* body copy in Inter (UI review); headings and display figures stay Montserrat, below */
+	font-weight: 400;
+	color: var(--text);
+	line-height: 1.6;
+	font-size: 1.0625rem;
+	letter-spacing: -0.1px; /* the design's tracking; set here so it doesn't depend on the theme's body style */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-size-adjust: 100%;
+	-webkit-text-size-adjust: 100%;
+}
+
+/* ---------- Base (blocks render as plain HTML: the block-library and global styles are not loaded here) ---------- */
+.ak-section,
+.ak-section * {
+	box-sizing: border-box;
+}
+
+.ak-section, .ak-section * { margin: 0; padding: 0; }
+
+.ak-section a { color: inherit; text-decoration: none; }
+
+.ak-section ul { list-style: none; }
+
+.ak-section img {
+	max-width: 100%;
+	height: auto;
+	display: block;
+}
+
+.ak-section figure { margin: 0; }
+
+.ak-section h1,
+.ak-section h2,
+.ak-section h3,
+.ak-section h4,
+.ak-section h5 {
+	font-family: var(--head);
+	letter-spacing: normal;
+	text-transform: none;
+	color: var(--ink);
+	line-height: 1.2;
+}
+
+/* Display figures set as paragraphs (hero stats, price, the 45% ribbon, achievement counts) keep the heading face. */
+.ak-section :is(.h-num, .price-tag, .pct, .up-to, .merit, .count, .big) { font-family: var(--head); }
+
+/* Editors mark accent words in bold: in headings they become the gold accent from the design. */
+.ak-section h1 strong,
+.ak-section h2 strong {
+	color: var(--gold);
+	font-weight: inherit;
+}
+
+/* The theme gives paragraphs a bottom margin (p:only-child, p:not(:last-child)); same specificity, declared later,
+   so this wins while staying weaker than the component rules below. */
+:where(.ak-section) p:only-child,
+:where(.ak-section) p:not(:last-child) {
+	margin-bottom: 0;
+}
+
+/* Classic themes' resets (Hello Elementor): tables at .9em, <sub>/<sup> with line-height 0. */
+.ak-section table { margin: 0; font-size: inherit; }
+
+.ak-section sub,
+.ak-section sup { line-height: inherit; }
+
+/* Classic themes make WordPress wrap each Group block's content in .wp-block-group__inner-container; make that
+   wrapper layout-transparent so the grids/flex rows below apply to the blocks themselves. */
+.ak-section .wp-block-group__inner-container { display: contents; }
+
+.ak-section .ak-container {
+	width: min(1200px, 100% - 40px);
+	max-width: none;
+	margin-inline: auto;
+	padding: 0;
+}
+
+.ak-section .ak-container.narrow { width: min(1020px, 100% - 40px); }
+
+.ak-section.section { padding: 70px 0; }
+
+/* Thin grey line between sections (Figma); not on the gradient band */
+.ak-section.section:not(.specs) { border-top: 1px solid #e7e5e5; }
+
+/* Course pages (their hero uses the "Dark" style) follow the course Figma: 38px section titles. Testimonials and FAQ
+   keep the standard size there (as in that design); a block style can set its own (e.g. Specializations "Five per row"). */
+.ak-page:has(> .wp-block-ak-hero.is-style-dark) { --ak-title-size: clamp(1.625rem, 1.2rem + 1.3056vw, 2.375rem); } /* → 38px */
+.ak-page:has(> .wp-block-ak-hero.is-style-dark) :is(.ak-section.testimonials, .ak-section.faq) { --ak-title-size: initial; }
+
+/* Home page (its hero uses the "Home" style): 28px section titles, as on example.com. */
+.ak-page:has(> .wp-block-ak-hero.is-style-home) { --ak-title-size: 1.75rem; } /* 28px */
+
+.ak-page:has(> .wp-block-ak-hero.is-style-home) .ak-section .title { font-weight: 600; line-height: 1.43; }
+
+/* Section header (Figma): eyebrow-line (22px) → title (35px) → sub (18px). Centred unless .left. No line under the eyebrow. */
+.ak-section .title {
+	font-size: var(--ak-title-size, clamp(1.625rem, 1.2rem + 1.25vw, 2.1875rem)); /* 26px → 35px */
+	font-weight: 600;
+	line-height: 1.3;
+	color: #000;
+	text-align: center;
+	margin-bottom: 7px;
+}
+
+.ak-section .title.left { text-align: left; }
+
+.ak-section .title.xl { font-size: clamp(1.625rem, 1.2rem + 1.25vw, 2.1875rem); } /* same as .title in the Figma */
+.ak-section .sub {
+	text-align: center;
+	max-width: 1012px;
+	margin: 0 auto 24px;
+	font-size: clamp(1rem, 0.9rem + 0.3vw, 1.125rem); /* 16px → 18px */
+	font-weight: 400;
+	line-height: 1.55;
+	color: #000;
+}
+
+.ak-section .eyebrow {
+	text-align: center;
+	color: var(--gold);
+	font-weight: 600;
+	font-size: 1.25rem;
+	margin-bottom: 18px;
+}
+
+/* Buttons: see _buttons.scss */
+@include meta.load-css('buttons');
+@include meta.load-css('advisor-form');
+@include meta.load-css('contact-form-7');
+
+/* The rest of the shared styles prints after this file, in order: base-sections.css, base-dba.css (_dba-page.scss) and
+   base-end.css (the ak-base handle), with the page-only styles (page-*.css) between them where a page uses them.
+   See inc/Modules/Blocks/PageStyles.php. */

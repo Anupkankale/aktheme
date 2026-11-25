@@ -1,0 +1,173 @@
+/* The "Talk to an Advisor" lead form: markup comes from the ak-core plugin ([aktheme_advisor_form]), the look from here.
+   Contract: .ak-advisor-form > (.__notice) + form.__form > .__label, input/select/textarea, .__phone, .__hp, .__consent, .__submit.
+   Tokens only. */
+.ak-advisor-form { width: 100%; }
+
+.ak-advisor-form__form {
+	display: grid;
+	gap: var(--wp--preset--spacing--10);
+	margin: 0;
+}
+
+/* The form is placed with a Shortcode block, whose auto-paragraphs wrap some fields in <p> (and leave an empty one):
+   their margins made the gaps uneven and the fields inside one <p> touched. The paragraphs step aside so every field
+   is a grid item with the same gap; a stray <br> takes no room. */
+.ak-advisor-form__form > p { display: contents; }
+
+.ak-advisor-form__form br { display: none; }
+
+/* Labels exist for screen readers; the placeholder is the visible hint. */
+.ak-advisor-form__label {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+.ak-advisor-form :is(input:not([type="checkbox"]), select, textarea) {
+	box-sizing: border-box;
+	width: 100%;
+	margin: 0;
+	padding: var(--wp--preset--spacing--8) var(--wp--preset--spacing--10);
+	border: 1px solid var(--wp--preset--color--grey-300);
+	border-radius: var(--wp--preset--border-radius--8);
+	background: var(--wp--preset--color--white);
+	color: var(--wp--preset--color--ink);
+	font-family: inherit;
+	font-size: var(--wp--preset--font-size--14);
+	line-height: 1.4;
+}
+
+.ak-advisor-form textarea {
+	min-height: var(--wp--custom--size--84);
+	resize: vertical;
+}
+
+.ak-advisor-form ::placeholder {
+	color: var(--wp--preset--color--grey);
+	opacity: 1;
+}
+
+.ak-advisor-form :is(input, select, textarea):focus-visible {
+	outline: var(--wp--custom--size--2) solid var(--wp--preset--color--sky);
+	outline-offset: 0;
+	border-color: var(--wp--preset--color--navy);
+}
+
+/* Country code + number share one rounded field. */
+.ak-advisor-form__phone {
+	display: flex;
+	align-items: stretch;
+	border: 1px solid var(--wp--preset--color--grey-300);
+	border-radius: var(--wp--preset--border-radius--8);
+	background: var(--wp--preset--color--white);
+	overflow: hidden;
+}
+
+.ak-advisor-form__phone:focus-within {
+	outline: var(--wp--custom--size--2) solid var(--wp--preset--color--sky);
+	border-color: var(--wp--preset--color--navy);
+}
+
+.ak-advisor-form .ak-advisor-form__phone :is(select, input) {
+	border: 0;
+	border-radius: 0;
+	outline: 0;
+}
+
+.ak-advisor-form .ak-advisor-form__phone select {
+	flex: 0 0 auto;
+	width: auto;
+	padding-right: var(--wp--preset--spacing--4);
+	border-right: 1px solid var(--wp--preset--color--grey-300);
+	border-radius: var(--wp--preset--border-radius--8) 0 0 var(--wp--preset--border-radius--8);
+}
+
+.ak-advisor-form .ak-advisor-form__phone input { flex: 1 1 auto; min-width: 0; }
+
+/* Honeypot: out of sight and out of reach for people. */
+.ak-advisor-form__hp {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+}
+
+.ak-advisor-form__consent {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--wp--preset--spacing--6);
+	color: var(--wp--preset--color--body-text);
+	font-size: var(--wp--preset--font-size--caption);
+	line-height: 1.5;
+}
+
+.ak-advisor-form__consent input { flex: 0 0 auto; width: var(--wp--custom--size--20); height: var(--wp--custom--size--20); margin: 0; }
+
+.ak-advisor-form__submit {
+	justify-self: start;
+	min-height: var(--wp--custom--size--44);
+	padding: var(--wp--preset--spacing--8) var(--wp--preset--spacing--16);
+	border: 0;
+	border-radius: var(--wp--preset--border-radius--5);
+	background: var(--wp--preset--color--navy);
+	color: var(--wp--preset--color--white);
+	font-family: inherit;
+	font-size: var(--wp--preset--font-size--14);
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.ak-advisor-form__submit:hover { background: var(--wp--preset--color--navy-deep); }
+
+.ak-advisor-form__submit:focus-visible {
+	outline: var(--wp--custom--size--2) solid var(--wp--preset--color--gold);
+	outline-offset: var(--wp--custom--size--2);
+}
+
+.ak-advisor-form__notice {
+	margin: 0 0 var(--wp--preset--spacing--10);
+	padding: var(--wp--preset--spacing--8) var(--wp--preset--spacing--10);
+	border: 1px solid;
+	border-radius: var(--wp--preset--border-radius--8);
+	font-size: var(--wp--preset--font-size--14);
+	line-height: 1.4;
+}
+
+.ak-advisor-form__notice.is-success {
+	border-color: var(--wp--preset--color--green);
+	background: var(--wp--preset--color--cream);
+	color: var(--wp--preset--color--navy);
+}
+
+.ak-advisor-form__download {
+	margin: 0 0 var(--wp--preset--spacing--10);
+	padding: var(--wp--preset--spacing--8) var(--wp--preset--spacing--10);
+	border: 1px solid var(--wp--preset--color--gold);
+	border-radius: var(--wp--preset--border-radius--8);
+	background: var(--wp--preset--color--cream);
+	color: var(--wp--preset--color--navy);
+	font-size: var(--wp--preset--font-size--14);
+	line-height: 1.4;
+}
+
+.ak-advisor-form__notice.is-error {
+	border-color: var(--wp--preset--color--danger);
+	background: var(--wp--preset--color--white);
+	color: var(--wp--preset--color--danger);
+}
+
+/* Country flags in the code list: Windows browsers have no flag emoji and show the letters ("AE"), so a small flag-only
+   font draws them. Its unicode-range covers just the regional-indicator letters, so it is fetched only where flags
+   appear; credits in README.md. */
+@font-face {
+	font-family: "Twemoji Country Flags";
+	font-display: swap;
+	src: url(../../../fonts/twemoji-country-flags.woff2) format("woff2");
+	unicode-range: U+1F1E6-1F1FF, U+1F3F4, U+E0062-E0063, U+E0065, U+E0067, U+E006C, U+E006E, U+E0073-E0074, U+E0077, U+E007F;
+}
+
+.ak-advisor-form .ak-advisor-form__phone select { font-family: "Twemoji Country Flags", var(--ui); }

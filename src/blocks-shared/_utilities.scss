@@ -1,0 +1,75 @@
+/* ==========================================================================
+   Utilities: small helper classes for the most common tweaks. Add them to any block inside an AK section
+   (Block → Advanced → Additional CSS class). All prefixed "u-" so they never clash with theme/plugin classes.
+
+   Spacing (top / bottom margin, px):   u-mt-0 u-mt-8 u-mt-16 u-mt-24 u-mt-32 u-mt-48 u-mt-64
+                                         u-mb-0 u-mb-8 u-mb-16 u-mb-24 u-mb-32 u-mb-48 u-mb-64
+   Section padding (top + bottom):       u-py-0 u-py-32 u-py-48 u-py-70 (70 = standard section)
+   Width:                                u-narrow (1020px) u-wide (1200px) u-full
+   Text:                                 u-center u-left u-right u-gold u-navy u-white u-muted
+   Background:                           u-bg-navy u-bg-soft (lavender→peach) u-bg-card (light grey)
+   Box:                                  u-card (white rounded card with shadow) u-rounded
+   Visibility:                           u-hide-mobile u-hide-desktop (breakpoint 640px)
+   ========================================================================== */
+$ak-space: 0, 8, 16, 24, 32, 48, 64;
+
+@each $s in $ak-space {
+	.ak-section .u-mt-#{$s} { margin-top: #{$s}px !important; }
+	.ak-section .u-mb-#{$s} { margin-bottom: #{$s}px !important; }
+}
+
+@each $s in 0, 32, 48, 70 {
+	.ak-section .u-py-#{$s},
+	.ak-section.u-py-#{$s} { padding-top: #{$s}px !important; padding-bottom: #{$s}px !important; }
+}
+
+.ak-section .u-narrow { width: min(1020px, 100% - 40px); margin-inline: auto; }
+
+.ak-section .u-wide { width: min(1200px, 100% - 40px); margin-inline: auto; }
+
+.ak-section .u-full { width: 100%; max-width: none; }
+
+.ak-section .u-center { text-align: center; }
+
+.ak-section .u-left { text-align: left; }
+
+.ak-section .u-right { text-align: right; }
+
+.ak-section .u-center.wp-block-buttons { justify-content: center; }
+
+.ak-section .u-gold { color: var(--gold) !important; }
+
+.ak-section .u-navy { color: var(--navy) !important; }
+
+.ak-section .u-white { color: #fff !important; }
+
+.ak-section .u-muted { color: var(--muted) !important; }
+
+.ak-section .u-bg-navy,
+.ak-section.u-bg-navy { background: var(--navy); color: #fff; }
+
+.ak-section .u-bg-navy :is(h1, h2, h3, h4, p),
+.ak-section.u-bg-navy :is(h1, h2, h3, h4, p) { color: #fff; }
+
+.ak-section .u-bg-soft,
+.ak-section.u-bg-soft { background: linear-gradient(135deg, var(--lavender), var(--peach)); }
+
+.ak-section .u-bg-card,
+.ak-section.u-bg-card { background: var(--card); }
+
+.ak-section .u-card { background: #fff; border-radius: 20px; box-shadow: 0 2px 6px rgba(0, 0, 0, .12); padding: 28px; }
+
+.ak-section .u-rounded { border-radius: var(--radius); overflow: hidden; }
+
+@media (max-width: 640px) {
+
+	.ak-section .u-hide-mobile { display: none !important; }
+}
+
+@media (min-width: 641px) {
+
+	.ak-section .u-hide-desktop { display: none !important; }
+}
+
+/* A marquee row whose items all fit does not scroll: its loop copies stay hidden so nothing shows twice. */
+.is-marquee.is-static .is-clone { display: none; }

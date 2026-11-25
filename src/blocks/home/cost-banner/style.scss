@@ -1,0 +1,201 @@
+/* AK Cost Banner (ak/cost-banner). Root element: .ak-section.cost-banner
+   Figma: a rounded card the width of the container (1200px): fee | white "45%" ribbon (pokes out above) |
+   scholarship text + button. */
+
+/* Boxed band: its own width, not the page's content-size cap. (The block editor's root rule is as specific as a plain
+   section selector, so this one is a class higher.) */
+.is-layout-constrained > .ak-section.cost-banner { max-width: none; }
+
+.ak-section.cost-banner {
+	position: relative;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 205px minmax(0, 1fr); /* the ribbon keeps its width, centred between two equal sides */
+	--cb-width: min(1200px, 100% + 2 * var(--wp--style--root--padding-left, 0px) - 40px); /* 100% is the padded content box inside the theme */
+
+	width: var(--cb-width);
+	left: min(0px, calc((100% - var(--cb-width)) / 2)); /* wider than the padded box (below 1240px): shift it so both screen gutters are 20px */
+	min-height: 249px;
+	margin: 35px auto 20px;
+	border-radius: 24px;
+	background: linear-gradient(90deg, #b98a3c 0%, #8a6b3c 22%, #4b4a4e 42%, #26304d 58%, #15294e 100%);
+	color: #fff;
+}
+
+.ak-section .cost-left {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 20px 20px 24px;
+	text-align: center;
+	border-radius: 24px 0 0 24px;
+}
+
+/* Cap, diploma and book (decoration): centred behind the white ribbon, so it peeks out the same amount on both sides,
+   and sits 9px above the card's bottom. Muted so the text stays readable; the ribbon and the text sit above it. */
+.ak-section.cost-banner::before {
+	content: "";
+	position: absolute;
+	left: 50%;
+	bottom: var(--wp--preset--spacing--9);
+	width: min(560px, 70%);
+	aspect-ratio: 760 / 339;
+	transform: translateX(-50%);
+	background: url(../../../../images/theme/spark.png) center / contain no-repeat; /* swap for the client's artwork */
+	opacity: .55;
+	-webkit-mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent);
+	mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent);
+	pointer-events: none;
+}
+
+.ak-section .cost-mid { position: relative; z-index: 1; }
+
+.ak-section .cost-left > *,
+.ak-section .cost-left > .wp-block-group__inner-container > * { position: relative; z-index: 1; }
+
+.ak-section .cost-left h3 {
+	color: #fff;
+	font-size: clamp(1.75rem, 1.2rem + 1.5vw, 2.5rem); /* 28px → 40px */
+	font-weight: 700;
+	line-height: 1.1;
+}
+
+.ak-section .price-tag {
+	display: inline-block;
+	margin-top: 16px;
+	background: #15294e;
+	border: 1px solid #f1c27a;
+	border-radius: 8px;
+	padding: 2px 18px;
+	color: #f6c35a;
+	font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem); /* 24px → 32px */
+	font-weight: 700;
+	line-height: 1.5;
+}
+
+/* White ribbon: flush with the card's top, to a point 30px above its bottom however tall the card grows */
+.ak-section .cost-mid {
+	align-self: stretch;
+	margin-top: 0;
+	margin-bottom: var(--wp--preset--spacing--30);
+	padding: 10px 12px 40px;
+	background: #fff;
+	color: var(--navy);
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 88%, 0 100%);
+	filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .15));
+}
+
+.ak-section .cost-mid .up-to { font-size: 1.0625rem; font-weight: 500; color: #000; }
+
+.ak-section .cost-mid .pct {
+	padding-bottom: 6px;
+	border-bottom: 1px solid var(--navy);
+	color: #e09a1b;
+	font-size: 4.125rem; /* 66px */
+	font-weight: 800;
+	line-height: 1;
+}
+
+.ak-section .cost-mid .merit { margin-top: 8px; color: #000; font-size: 1.1875rem; font-weight: 500; line-height: 1.2; }
+
+.ak-section .cost-right {
+	position: relative;
+	z-index: 1; /* above the cap decoration the card draws behind this column */
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 20px 20px 24px;
+	text-align: center;
+} /* the same space on both sides, as the fee side (20px) */
+
+.ak-section .cost-right .wp-block-buttons { justify-content: center; }
+
+.ak-section .cost-right h3 { max-width: 420px; color: #fff; font-size: clamp(1.5rem, 0.7143rem + 1.6369vw, 2.1875rem); font-weight: 700; } /* → 35px */
+.ak-section .cost-right p {
+	max-width: 420px;
+	margin: 8px auto 18px;
+	color: #fff;
+	font-family: var(--ui);
+	font-size: 0.96875rem; /* 15.5px */
+	line-height: 1.6;
+}
+
+/* Button with a circled arrow after the text */
+.ak-section .btn-arrow .wp-block-button__link::before {
+	content: "";
+	order: 2;
+	width: 22px;
+	height: 22px;
+	background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2315294e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M8 12h8m-3-3 3 3-3 3'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+@media (max-width: 1200px) {
+
+	.ak-section.cost-banner { grid-template-columns: minmax(0, 1fr) 190px minmax(0, 1fr); }
+}
+
+@media (max-width: 900px) {
+
+	.ak-section.cost-banner { grid-template-columns: 1fr; text-align: center; background: linear-gradient(180deg, #b98a3c 0%, #3a3a45 40%, #15294e 100%); }
+
+	.ak-section .cost-left { border-radius: 24px 24px 0 0; }
+
+	.ak-section.cost-banner::before { display: none; } /* stacked: no ribbon to tuck under, and it would sit behind the text */
+
+	.ak-section .cost-left, .ak-section .cost-right { padding: 28px 20px; }
+
+	.ak-section .cost-mid { width: 220px; height: auto; margin: 0 auto; padding-top: 12px; }
+
+	.ak-section .cost-right p { margin-inline: auto; }
+}
+
+/* After the "Wide" Highlights (DBA Course Page): spacing from the Figma */
+@media (min-width: 641px) {
+
+	.ak-section.highlights.is-style-wide + .ak-section.cost-banner { margin: 32px auto 38px; }
+}
+
+/* ---------- Style "Home" (block style, the Home page): a 952px card, 234px tall, smaller type (Home page, 1440 frame). ---------- */
+.ak-section.cost-banner.is-style-home {
+	grid-template-columns: 306px 150px minmax(0, 1fr);
+	width: min(952px, 100% + 2 * var(--wp--style--root--padding-left, 0px) - 40px); /* 100% is the padded content box inside the theme */
+	min-height: 234px;
+	margin: 20px auto;
+	border-radius: 16px;
+}
+
+.ak-section.cost-banner.is-style-home .cost-left { padding: 15px 15px 15px 30px; border-radius: 16px 0 0 16px; }
+
+.ak-section.cost-banner.is-style-home .cost-left h3 { font-size: 1.5625rem; line-height: 1.52; } /* 25px */
+.ak-section.cost-banner.is-style-home .price-tag { margin-top: 20px; padding: 0 12px; border: 2px solid #ffd385; border-radius: 10px; color: #ffd385; font-size: 1.25rem; line-height: 2.2; }
+
+.ak-section.cost-banner.is-style-home .cost-mid { height: 220px; padding: 10px 10px 36px; }
+
+.ak-section.cost-banner.is-style-home .cost-mid .up-to { font-size: .9375rem; line-height: 1.33; }
+
+.ak-section.cost-banner.is-style-home .cost-mid .pct { padding-bottom: 8px; font-size: 1.875rem; line-height: 1.17; }
+
+.ak-section.cost-banner.is-style-home .cost-mid .merit { margin-top: 8px; font-size: .8125rem; font-weight: 600; line-height: 1.85; }
+
+.ak-section.cost-banner.is-style-home .cost-right { padding: 15px 30px 15px 44px; }
+
+.ak-section.cost-banner.is-style-home .cost-right h3 { font-size: 1.5625rem; line-height: 1.52; }
+
+.ak-section.cost-banner.is-style-home .cost-right p { max-width: 431px; margin: 5px 0 14px; font-size: .8125rem; line-height: 1.43; } /* 13px */
+
+@media (max-width: 900px) {
+
+	.ak-section.cost-banner.is-style-home { grid-template-columns: 1fr; }
+
+	.ak-section.cost-banner.is-style-home .cost-left { border-radius: 16px 16px 0 0; padding: 28px 20px; }
+
+	.ak-section.cost-banner.is-style-home .cost-right { padding: 28px 20px; }
+
+	.ak-section.cost-banner.is-style-home .cost-right p { margin-inline: auto; }
+}

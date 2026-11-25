@@ -1,0 +1,258 @@
+/* AK Specializations (ak/specializations). Root element: .ak-section.specs
+   Centred header, then a row of program cards: 4 visible inside the container, the rest scroll sideways
+   (marquee scroll from view.js, or swipe / trackpad). Each card is a paragraph whose link is the program page. */
+.ak-section.specs { background: linear-gradient(180deg, #fdf3e3 0%, #d1defe 100%); padding: 26px 0 66px; }
+
+.ak-section.specs .sub { margin-bottom: 24px; }
+
+/* Scroll row: 4 cards per view (3 gaps of 26px) */
+.ak-section .spec-grid {
+	--per-view: 4;
+	--gap: 26px;
+	display: flex;
+	gap: var(--gap);
+	width: min(1200px, 100% - 40px); /* the content width (also before the script runs, and in the editor) */
+	margin-inline: auto;
+	padding: 0 6px 10px 0; /* room for the card shadow */
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	scroll-behavior: smooth;
+	scrollbar-width: none;
+	overscroll-behavior-x: contain;
+}
+
+.ak-section .spec-grid::-webkit-scrollbar { display: none; }
+
+.ak-section .spec-card { flex: 0 0 calc((100% - (var(--per-view) - 1) * var(--gap)) / var(--per-view)); scroll-snap-align: start; }
+
+/* Marquee: continuous movement, so no snapping or smooth-scroll easing */
+.ak-section .spec-grid.is-marquee { scroll-snap-type: none; scroll-behavior: auto; }
+
+/* Card */
+.ak-section .spec-card a {
+	position: relative;
+	display: flex;
+	align-items: center;
+	height: 100%;
+	min-height: 68px; /* Figma */
+	padding: 12px 54px 12px 20px;
+	border-radius: 12px;
+	background: #fff;
+	box-shadow: 5px 6px 0 var(--navy);
+	color: #000;
+	font-size: 1.03125rem; /* 16.5px */
+	font-weight: 500;
+	line-height: 1.3;
+	text-decoration: none;
+	transition: background-color .25s, color .25s, box-shadow .25s;
+}
+
+/* Arrow (mask, so it takes the text colour) */
+.ak-section .spec-card a::after {
+	content: "";
+	position: absolute;
+	right: 16px;
+	bottom: 12px;
+	width: 26px;
+	height: 26px;
+	background: currentcolor;
+	-webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 12h17m-6-7 7 7-7 7' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 12h17m-6-7 7 7-7 7' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+	transition: transform .25s;
+}
+
+.ak-section .spec-card a::before { content: none; }
+
+/* Hover / focus: brand colours (navy card, gold shadow) */
+.ak-section .spec-card a:is(:hover, :focus-visible) { background: var(--navy); color: #fff; box-shadow: 5px 6px 0 var(--gold); }
+
+.ak-section .spec-card a:is(:hover, :focus-visible)::after { transform: translateX(4px); }
+
+@media (max-width: 1100px) {
+
+	.ak-section .spec-grid { --per-view: 3; }
+}
+
+@media (max-width: 800px) {
+
+	.ak-section .spec-grid { --per-view: 2; --gap: 16px; }
+}
+
+@media (max-width: 520px) {
+
+	.ak-section .spec-grid { --per-view: 1.2; }
+}
+
+/* Style "Five per row" (block style, e.g. "Other Doctorate (DBA) Concentrations" on the DBA Course Page): five cards per
+   view; the row still glides (view.js moves every program row, UI review). Smaller screens as above. */
+@media (min-width: 1101px) {
+
+	.ak-section.specs.is-style-five .spec-grid { --per-view: 5; width: min(1184px, 100% - 40px); }
+}
+
+@media (min-width: 641px) {
+
+	.ak-section.specs.is-style-five { padding-bottom: 55px; }
+}
+
+.ak-section.specs.is-style-five { --ak-title-size: clamp(1.625rem, 1.2rem + 2vw, 3rem); } /* → 48px (Figma) */
+.ak-section.specs.is-style-five .title { line-height: 1.1; margin-bottom: -5px; }
+
+.ak-section.specs.is-style-five .spec-card a { align-items: flex-start; padding-top: 14px; } /* text top-left, as in the Figma */
+
+/* Phones: every .section gets the same vertical rhythm (overrides the padding above). */
+@media (max-width: 640px) {
+
+	.ak-section.specs { padding: 48px 0; }
+}
+
+/* ---------- Style "Home" (block style, the Home page, pattern "Home (AK)"): eyebrow, title and sub on a yellow-to-lavender
+   band, a scrolling row of white cards (title, arrow, line, description; four in view, spaced apart) and a "View More" button.
+   Hovering or focusing a card turns it brand navy; none is highlighted by default. Tokens only. ---------- */
+.ak-section.specs.is-style-home {
+	--eyebrow-line: var(--wp--custom--size--88);
+
+	padding: var(--wp--preset--spacing--24) 0 calc(var(--wp--preset--spacing--40) + var(--wp--preset--spacing--4));
+	background: var(--wp--custom--gradient--programs);
+}
+
+
+.ak-section.specs.is-style-home .title { margin-bottom: var(--wp--preset--spacing--6); font-weight: 600; }
+
+.ak-section.specs.is-style-home .sub { max-width: none; margin-bottom: 0; }
+
+.ak-section.specs.is-style-home .spec-grid {
+	--spec-gap: var(--wp--preset--spacing--20);
+
+	display: flex;
+	gap: var(--spec-gap);
+	width: min(var(--wp--style--global--wide-size), 100% - var(--wp--preset--spacing--40));
+	margin: var(--wp--preset--spacing--16) auto 0;
+	padding: 0;
+	overflow-x: auto;
+	scrollbar-width: none;
+}
+
+.ak-section.specs.is-style-home .spec-grid::-webkit-scrollbar { display: none; }
+
+/* Four cards in view; the row glides sideways (view.js) and pauses on hover, focus or touch. Swiping and trackpads work too. */
+.ak-section.specs.is-style-home .spec-card {
+	flex: 0 0 calc((100% - 3 * var(--spec-gap)) / 4);
+	margin: 0;
+}
+
+.ak-section.specs.is-style-home .spec-card a {
+	position: relative;
+	display: grid;
+	grid-template-rows: var(--wp--custom--size--44) auto;
+	align-content: start;
+	box-sizing: border-box;
+	min-height: var(--wp--custom--size--135);
+	height: 100%;
+	padding: var(--wp--preset--spacing--14) var(--wp--custom--size--13) var(--wp--preset--spacing--5);
+	border: 0;
+	border-radius: var(--wp--preset--border-radius--8);
+	background: var(--wp--preset--color--white);
+	box-shadow: none;
+	color: var(--wp--preset--color--ink);
+	font-weight: 400;
+	text-align: left;
+	text-decoration: none;
+	transition: background-color 0.2s, color 0.2s;
+}
+
+.ak-section.specs.is-style-home .spec-card a::before { content: none; }
+
+/* Arrow badge, top right: navy with a white arrow; white with a navy arrow on the navy card. */
+.ak-section.specs.is-style-home .spec-card a::after {
+	content: "";
+	position: absolute;
+	top: var(--wp--preset--spacing--15);
+	right: var(--wp--preset--spacing--18);
+	bottom: auto;
+	width: var(--wp--custom--size--20);
+	height: var(--wp--custom--size--20);
+	border-radius: 0;
+	-webkit-mask: none;
+	mask: none;
+	background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Crect width='20' height='20' rx='3' fill='%2314234b'/%3E%3Cpath d='M6.5 13.5l7-7M7.5 6.5h6v6' fill='none' stroke='%23fff' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+	transform: none;
+}
+
+.ak-section.specs.is-style-home .sp-title {
+	display: flex;
+	align-items: center;
+	padding: 0 var(--wp--preset--spacing--34) 0 0;
+	border: 0;
+	font-size: var(--wp--preset--font-size--medium);
+	font-weight: 600;
+	line-height: 1.22;
+}
+
+.ak-section.specs.is-style-home .sp-desc {
+	display: block;
+	margin-top: var(--wp--preset--spacing--5);
+	padding-top: var(--wp--preset--spacing--5);
+	border-top: 1px solid var(--wp--preset--color--grey-900);
+	color: inherit;
+	font-family: var(--wp--preset--font-family--inter);
+	font-size: var(--wp--preset--font-size--small);
+	line-height: 1.33;
+}
+
+/* Brand colour on hover and keyboard focus only: no card is highlighted by default. */
+.ak-section.specs.is-style-home .spec-card a:is(:hover, :focus-visible) {
+	background: var(--wp--preset--color--navy-band);
+	color: var(--wp--preset--color--white);
+}
+
+.ak-section.specs.is-style-home .spec-card a:is(:hover, :focus-visible)::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Crect width='20' height='20' rx='3' fill='%23fff'/%3E%3Cpath d='M6.5 13.5l7-7M7.5 6.5h6v6' fill='none' stroke='%2314234b' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+
+.ak-section.specs.is-style-home .spec-card a:is(:hover, :focus-visible) .sp-desc { border-top-color: var(--wp--preset--color--grey-200); }
+
+.ak-section.specs.is-style-home .wp-block-buttons { justify-content: center; margin-top: calc(var(--wp--preset--spacing--20) + 1px); }
+
+.ak-section.specs.is-style-home .wp-block-button__link {
+	min-width: var(--wp--custom--size--255);
+	min-height: var(--wp--custom--size--65);
+	font-size: var(--wp--preset--font-size--large);
+	font-weight: 600;
+}
+
+@media (max-width: 900px) {
+
+	.ak-section.specs.is-style-home .spec-grid { --spec-gap: var(--wp--preset--spacing--16); }
+
+	.ak-section.specs.is-style-home .spec-card { flex-basis: calc((100% - var(--spec-gap)) / 2); }
+}
+
+@media (max-width: 560px) {
+
+	.ak-section.specs.is-style-home { padding: var(--wp--preset--spacing--32) 0; }
+
+	.ak-section.specs.is-style-home .spec-grid { width: calc(100% - var(--wp--preset--spacing--24)); }
+
+	.ak-section.specs.is-style-home .spec-card { flex-basis: 82%; }
+
+	.ak-section.specs.is-style-home .spec-card a { min-height: 0; padding-bottom: var(--wp--preset--spacing--14); }
+
+	.ak-section.specs.is-style-home .wp-block-button__link { min-width: 0; width: 100%; }
+}
+
+/* Style "Six per row" (MBA page): six compact cards per view; the row still glides like every program row (view.js).
+   Smaller screens use the scrolling rows above. */
+@media (min-width: 1101px) {
+
+	.ak-section.specs.is-style-six .spec-grid { --per-view: 6; --gap: var(--wp--preset--spacing--16); width: min(var(--wp--custom--size--1186), 100% - var(--wp--preset--spacing--40)); }
+}
+
+.ak-section.specs.is-style-six .spec-card a {
+	align-items: flex-start;
+	padding: var(--wp--preset--spacing--14) var(--wp--preset--spacing--36) var(--wp--preset--spacing--14) var(--wp--preset--spacing--14);
+	font-size: var(--wp--preset--font-size--small);
+}
+
+@media (max-width: 640px) {
+
+	.ak-section.specs.is-style-five .title { margin-bottom: var(--wp--preset--spacing--10); line-height: 1.3; }
+}

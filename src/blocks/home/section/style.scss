@@ -1,0 +1,25 @@
+/* AK Section (ak/section): a blank section; its look comes from base.scss, _buttons.scss and _utilities.scss. */
+.ak-section.ak-blank .title + .sub { margin-top: -6px; }
+
+/* Phones: every .section gets the same vertical rhythm (overrides the padding above). */
+@media (max-width: 640px) {
+
+	.ak-section.ak-blank { padding: 48px 0; }
+}
+
+/* ---------- Style "Home" (block style, the Home page, "Affiliated Information Centers"): 30px above and below,
+   a 28px title, one line of text and a 720px picture centred under it. ---------- */
+.ak-section.ak-blank.is-style-home { padding: 30px 0; }
+
+.ak-section.ak-blank.is-style-home .title { margin-bottom: 20px; }
+
+.ak-section.ak-blank.is-style-home .sub { max-width: 728px; margin-bottom: 20px; }
+
+.ak-section.ak-blank.is-style-home .centres-map { margin: 0 auto; }
+
+.ak-section.ak-blank.is-style-home .centres-map img { width: min(var(--wp--custom--size--1102), 100%); margin-inline: auto; }
+
+@media (max-width: 640px) {
+
+	.ak-section.ak-blank.is-style-home { padding: 32px 0; }
+}

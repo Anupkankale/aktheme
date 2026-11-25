@@ -1,0 +1,1327 @@
+@use "breakpoints" as *;
+
+// Solid caret for the header menu's dropdown items (Font Awesome "caret-down" shape, as on the live site).
+$nav-icon-caret: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 512'%3E%3Cpath d='M31.3 192h257.4c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8a20 20 0 0 1-28.2 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z'/%3E%3C/svg%3E");
+
+/* stylelint-disable selector-class-pattern -- WordPress core block class names use BEM (wp-block-button__link). */
+// Header and footer. Shared by the front end (frontend/styles.scss) and the block editor (editor/editor.scss).
+// Layout and colours live in the block markup (parts/header.html, parts/promo-bar.html, parts/footer.html); this is only what blocks
+// can't express: the sticky pill, the shadow and the responsive switches.
+
+
+// ---- Header ---------------------------------------------------------------------------------------------------
+
+// The header part is sticky; its top is pulled up by the height of the promo bar, so the bar scrolls away and the
+// pill stays. The pill itself takes no height (see .ak-pill-wrap): it floats over the top of the page, like the
+// hero's top padding expects.
+.wp-site-blocks > header.wp-block-template-part {
+	--ak-promo-h: var(--wp--custom--size--72);
+
+	position: sticky;
+	top: calc(var(--wp-admin--admin-bar--height, 0px) - var(--ak-promo-h)); // 0px, not 0: a unitless 0 makes the calc() invalid
+	z-index: 100;
+
+	@media (max-width: #{$bp-tablet - 1}) {
+		// A unit is needed here: the sticky offset subtracts this from a length.
+		// stylelint-disable-next-line length-zero-no-unit
+		--ak-promo-h: 0px;
+	}
+
+	// Scrolling down hides the header (header-scroll.js adds .is-hidden), scrolling up brings it back. The extra distance
+	// carries the floating pill off the screen too, since the pill takes no height of its own.
+	transition: transform var(--wp--custom--motion--base) ease;
+
+	&.is-hidden {
+		transform: translateY(calc(-100% - var(--wp--custom--size--135)));
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		transition: none;
+	}
+}
+
+.ak-promo,
+.ak-pill,
+.ak-footer {
+	letter-spacing: normal; // the theme's -0.1px tracking is for the AK sections only
+}
+
+.ak-promo {
+	box-sizing: border-box;
+	height: var(--wp--custom--size--72);
+	gap: var(--wp--preset--spacing--48);
+	margin: 0;
+
+	// (Core's flex layout rule is as specific as .ak-promo, hence the extra class.)
+	@media (max-width: #{$bp-tablet - 1}) {
+
+		&.wp-block-group {
+			display: none;
+		}
+	}
+
+	&-title {
+		margin: 0;
+		font-size: var(--wp--preset--font-size--24);
+		font-weight: 700;
+		line-height: 1.2;
+	}
+
+	&-sub {
+		margin: 0;
+		font-size: var(--wp--preset--font-size--small);
+		line-height: 1.3;
+	}
+
+	.wp-block-button__link {
+		padding: var(--wp--preset--spacing--8) var(--wp--preset--spacing--22);
+		border: 1px solid currentcolor;
+		border-radius: var(--wp--preset--border-radius--pill);
+		font-size: var(--wp--preset--font-size--small);
+		font-weight: 600;
+		line-height: 1.4;
+	}
+}
+
+.ak-pill-wrap {
+	position: relative;
+	height: 0;
+	margin: 0;
+	overflow: visible;
+}
+
+.ak-pill {
+	box-sizing: border-box;
+	position: relative;
+	width: var(--wp--custom--header--pill-width);
+	min-height: var(--wp--custom--header--pill-height);
+	top: var(--wp--preset--spacing--15); // offset, not margin: core's first-child reset would cancel a margin
+	margin: 0 auto;
+	box-shadow: var(--wp--preset--shadow--pill);
+
+	// Tablet: 10px in from the screen edge, 15px inside. Phone: the same inset, 34px inside, 10px from the top.
+	@media (max-width: #{$bp-nav - 1}) {
+		top: var(--wp--preset--spacing--18);
+		width: calc(100% - var(--wp--custom--size--20));
+		padding-inline: var(--wp--preset--spacing--15) !important;
+	}
+
+	@media (max-width: #{$bp-tablet - 1}) {
+		top: var(--wp--preset--spacing--10);
+		padding-inline: var(--wp--preset--spacing--34) !important;
+	}
+
+	// The logo keeps its size: as a flex item it used to give way first when the menu grew (it shrank to 20px).
+	.wp-block-site-logo { flex: none; }
+
+	.wp-block-site-logo img {
+		width: var(--wp--custom--size--63);
+		height: auto;
+	}
+
+	// The menu sits in the middle of the room between the logo and the button, however many items it has (the menu is
+	// edited in Appearance > Menus, so its width is not fixed).
+	nav.ak-nav {
+		flex: 0 1 auto;
+		margin: 0 0 0 auto; // below the breakpoint the hamburger sits at the right edge
+
+		@media (min-width: $bp-nav) {
+			margin: 0 auto;
+		}
+	}
+
+	// Live values: 15px / 500 / #666, 12px either side of each item, 25px for the chevron.
+	.ak-nav {
+		color: var(--wp--preset--color--grey);
+		font-size: var(--wp--preset--font-size--small);
+		font-weight: 500;
+		line-height: 1.2;
+	}
+
+	.ak-nav .wp-block-navigation__responsive-container-content > .wp-block-navigation__container > .wp-block-navigation-item {
+		padding-inline: var(--wp--preset--spacing--12);
+	}
+
+	.ak-nav .wp-block-navigation-item__content {
+		padding: 0;
+		white-space: nowrap;
+	}
+
+	.ak-nav .wp-block-navigation__submenu-icon {
+		width: var(--wp--custom--size--13);
+		margin-inline-start: var(--wp--preset--spacing--12);
+	}
+
+	// Desktop menu, as on the live site: a solid caret (not core's chevron) in the text colour, and on hover a 3px
+	// gold line across the whole item near the bar's bottom edge, the text turning black.
+	@media (min-width: $bp-nav) {
+
+		.ak-nav .wp-block-navigation__submenu-icon {
+			width: var(--wp--custom--size--15);
+			height: var(--wp--custom--size--15);
+			background: currentcolor;
+			-webkit-mask: $nav-icon-caret center / contain no-repeat;
+			mask: $nav-icon-caret center / contain no-repeat;
+
+			svg { display: none; }
+		}
+
+		// The items reach down to 6px above the bar's bottom, so the line sits where the live one does and the
+		// dropdown opens just under it.
+		.ak-nav .wp-block-navigation__responsive-container-content > .wp-block-navigation__container > .wp-block-navigation-item {
+			position: relative;
+			padding-block: var(--wp--preset--spacing--25);
+
+			&::after {
+				content: "";
+				position: absolute;
+				inset: auto 0 0;
+				height: var(--wp--custom--border-width--3);
+				background: var(--wp--preset--color--gold);
+				opacity: 0;
+				transition: opacity var(--wp--custom--motion--base) ease;
+				pointer-events: none;
+			}
+
+			&:is(:hover, :focus-within) {
+				color: var(--wp--preset--color--ink);
+
+				&::after { opacity: 1; }
+			}
+
+			// The dropdown keeps its own colours.
+			.wp-block-navigation__submenu-container { color: var(--wp--preset--color--body-text); }
+		}
+	}
+
+	// The dropdown panel: square, no inner padding (a row's own background then reaches both edges), and sized by
+	// the longest label. .ak-nav plus the repeated class because core's editor rules for the selected submenu are
+	// four classes deep and load after these.
+	.ak-nav .has-child .wp-block-navigation__submenu-container.wp-block-navigation__submenu-container {
+		width: max-content;
+		padding: 0;
+		border: 0;
+		border-radius: 0;
+		box-shadow: var(--wp--preset--shadow--dropdown);
+		background: var(--wp--preset--color--white);
+		color: var(--wp--preset--color--body-text);
+
+		.wp-block-navigation-item__content {
+			padding: var(--wp--preset--spacing--12) var(--wp--preset--spacing--20);
+			white-space: nowrap;
+			font-size: var(--wp--preset--font-size--14);
+		}
+
+		// Desktop only: in the mobile overlay the submenus are a plain indented list, with no hover band.
+		@media (min-width: $bp-nav) {
+
+			.wp-block-navigation-item__content:focus-visible,
+			.wp-block-navigation-item:hover > .wp-block-navigation-item__content {
+				background: var(--wp--preset--color--navy-footer);
+				color: var(--wp--preset--color--white); // no weight change: the label keeps its width on hover
+			}
+		}
+	}
+
+	// The open overlay (below $bp-nav): a menu panel. Phones get the whole screen; from $bp-phone it is a panel that
+	// slides in from the right over the dimmed page (a tap on the dimmed page closes it: core-navigation.js). A top row
+	// with the logo and the close button, then the groups as an accordion (closed until their arrow, or for a group
+	// with no page of its own its label, is tapped), then the Contact Us button. The logo row and the button are added
+	// by core-navigation.js.
+	// One step stronger than core's own white-overlay rule
+	// (.wp-block-navigation:not(.has-background) .wp-block-navigation__responsive-container.is-menu-open:not(.disable-default-overlay)).
+	.ak-nav .wp-block-navigation__responsive-container.wp-block-navigation__responsive-container.is-menu-open:not(.disable-default-overlay) {
+		padding: 0;
+		background: var(--wp--preset--color--white);
+		color: var(--wp--preset--color--body-text);
+
+		@media (min-width: $bp-phone) {
+			background: color-mix(in srgb, var(--wp--preset--color--navy-night) 55%, transparent);
+			animation: none; // the panel slides in, the dimmed page just appears
+		}
+
+		// The panel.
+		.wp-block-navigation__responsive-close {
+			max-width: none;
+			min-height: 100%;
+			margin: 0;
+			background: var(--wp--preset--color--white);
+
+			@media (min-width: $bp-phone) {
+				width: min(100%, var(--wp--custom--size--416));
+				margin-left: auto;
+				box-shadow: var(--wp--preset--shadow--dropdown);
+				animation: ak-nav-panel-in var(--wp--custom--motion--base) ease-out;
+			}
+		}
+
+		.wp-block-navigation__responsive-dialog { position: relative; }
+
+		// Top row: the logo, and the close button in the same row.
+		.ak-nav-head {
+			display: flex;
+			align-items: center;
+			min-height: var(--wp--custom--size--72);
+			padding: var(--wp--preset--spacing--12) var(--wp--custom--size--72) var(--wp--preset--spacing--12) var(--wp--preset--spacing--20);
+			border-bottom: 1px solid var(--wp--preset--color--line);
+
+			.ak-nav-logo {
+				width: var(--wp--custom--size--50);
+				height: auto;
+			}
+		}
+
+		.wp-block-navigation__responsive-container-close {
+			top: calc((var(--wp--custom--size--72) - var(--wp--custom--size--44)) / 2);
+			right: var(--wp--preset--spacing--16);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: var(--wp--custom--size--44);
+			height: var(--wp--custom--size--44);
+			border-radius: 50%;
+			background: var(--wp--preset--color--card);
+			color: var(--wp--preset--color--ink);
+
+			svg {
+				width: var(--wp--custom--size--22);
+				height: var(--wp--custom--size--22);
+			}
+		}
+
+		.wp-block-navigation__responsive-container-content {
+			padding: var(--wp--preset--spacing--8) var(--wp--preset--spacing--20) 0;
+		}
+
+		.wp-block-navigation__container {
+			gap: 0;
+			align-items: stretch;
+			width: 100%;
+		}
+
+		// A group: its label and arrow on one row, its links under them when open.
+		.wp-block-navigation__container > .wp-block-navigation-item {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) auto;
+			align-items: center;
+			width: 100%;
+			padding: 0;
+			border-bottom: 1px solid var(--wp--preset--color--line);
+			font-size: var(--wp--preset--font-size--body);
+			font-weight: 600;
+
+			> .wp-block-navigation-item__content {
+				display: flex;
+				align-items: center;
+				min-height: var(--wp--custom--size--50);
+				color: var(--wp--preset--color--ink);
+				white-space: normal;
+			}
+
+			> .wp-block-navigation-item__content:not([href]) { cursor: pointer; }
+
+			&.current-menu-item > .wp-block-navigation-item__content { color: var(--wp--preset--color--gold-dark); }
+		}
+
+		// The arrow: a 44px button, turned when the group is open (core hides it in the overlay).
+		.wp-block-navigation__submenu-icon.wp-block-navigation-submenu__toggle {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: var(--wp--custom--size--44);
+			height: var(--wp--custom--size--44);
+			margin: 0;
+			padding: 0;
+			border-radius: 50%;
+			color: var(--wp--preset--color--navy);
+			cursor: pointer;
+
+			svg {
+				width: var(--wp--custom--size--13);
+				height: var(--wp--custom--size--13);
+				transform: none; // core turns it with transform when aria-expanded is true; the theme turns it below
+				transition: rotate var(--wp--custom--motion--base) ease;
+			}
+
+		}
+
+		.has-child.ak-open > .wp-block-navigation-submenu__toggle {
+			background: var(--wp--preset--color--lavender);
+
+			svg { rotate: 180deg; }
+		}
+
+		// Closed groups hide their links (core shows every list in the overlay). Only once the script runs the accordion.
+		&.ak-accordion .wp-block-navigation-item.has-child:not(.ak-open) > .wp-block-navigation__submenu-container.wp-block-navigation__submenu-container {
+			display: none;
+		}
+
+		.has-child .wp-block-navigation__submenu-container {
+			grid-column: 1 / -1;
+			width: auto;
+			min-width: 0;
+			max-width: none;
+			margin: 0;
+			padding: 0 0 var(--wp--preset--spacing--10) var(--wp--preset--spacing--12);
+			border: 0;
+			border-radius: 0;
+			box-shadow: none;
+			background: transparent;
+
+			// stylelint-disable-next-line no-descending-specificity -- the open-panel rule above is the more specific one, on purpose
+			.wp-block-navigation-item__content {
+				display: flex;
+				align-items: center;
+				min-height: var(--wp--custom--size--44);
+				padding: 0 var(--wp--preset--spacing--12);
+				border-left: var(--wp--custom--size--2) solid var(--wp--preset--color--line);
+				color: var(--wp--preset--color--body-text);
+				font-size: var(--wp--preset--font-size--small);
+				font-weight: 500;
+				white-space: normal;
+			}
+		}
+
+		// The page you are on: gold text and a gold bar.
+		.has-child .wp-block-navigation__submenu-container .current-menu-item > .wp-block-navigation-item__content {
+			border-left-color: var(--wp--preset--color--gold);
+			color: var(--wp--preset--color--gold-dark);
+		}
+
+		// Contact Us, under the menu.
+		.ak-nav-foot {
+			padding: var(--wp--preset--spacing--24) var(--wp--preset--spacing--20);
+
+			.ak-nav-cta {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				box-sizing: border-box;
+				width: 100%;
+				min-height: var(--wp--custom--size--50);
+				border: 0;
+				border-radius: var(--wp--preset--border-radius--5);
+				background: var(--wp--preset--color--navy-footer);
+				color: var(--wp--preset--color--white);
+				font-size: var(--wp--preset--font-size--normal);
+				font-weight: 600;
+				text-decoration: none;
+			}
+		}
+
+		:is(a, button):focus-visible {
+			outline: var(--wp--custom--size--2) solid var(--wp--preset--color--gold);
+			outline-offset: var(--wp--custom--size--2);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+
+		.wp-block-navigation__responsive-container.is-menu-open {
+
+			.wp-block-navigation__responsive-close { animation: none; }
+
+			.wp-block-navigation__submenu-icon svg { transition: none; }
+		}
+	}
+
+	&-cta .wp-block-button__link {
+		border: 0; // the global button border is for page content
+		padding: var(--wp--preset--spacing--12) var(--wp--preset--spacing--24);
+		font-size: var(--wp--preset--font-size--14);
+		font-weight: 600;
+		line-height: var(--wp--custom--line-height--18);
+		white-space: nowrap;
+	}
+
+	// "Contact Us" lives in the menu too, but only shows inside the overlay.
+	.ak-nav-contact {
+		display: none;
+	}
+
+	// The overlay's logo row and Contact Us button (added by core-navigation.js) only show in the open overlay: on
+	// desktop the same markup is the menu bar.
+	.wp-block-navigation__responsive-container:not(.is-menu-open) :is(.ak-nav-head, .ak-nav-foot) {
+		display: none;
+	}
+
+	// Menu overlay up to $bp-nav (core switches at 600px; six items plus the button need more room).
+	@media (max-width: #{$bp-nav - 1}) {
+
+		// Hamburger: a 33px tinted square, as on the live site.
+		.wp-block-navigation__responsive-container-open:not(.always-shown) {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			box-sizing: border-box;
+			width: var(--wp--custom--size--33);
+			height: var(--wp--custom--size--33);
+			padding: var(--wp--custom--size--5-5);
+			border-radius: var(--wp--preset--border-radius--3);
+			background: color-mix(in srgb, var(--wp--preset--color--ink) 5%, transparent);
+
+			svg {
+				width: var(--wp--custom--size--22);
+				height: var(--wp--custom--size--22);
+			}
+		}
+
+		.wp-block-navigation__responsive-container:not(.hidden-by-default):not(.is-menu-open) {
+			display: none;
+		}
+
+		.ak-pill-cta {
+			display: none;
+		}
+
+		.ak-nav-contact {
+			display: block;
+		}
+	}
+}
+
+// The pill floats over the top of the page and takes no height, so the content has to clear it. Pages that open with
+// an AK section get the clearance inside that section (a transparent border, so its own background still shows
+// behind the pill; 77px puts the Home hero's first line where the live site has it); everything else gets it as
+// padding on <main>. Front end only (.wp-site-blocks): the block editor has no header.
+.wp-site-blocks > main {
+	padding-top: var(--wp--custom--header--main-clearance);
+
+	&:has(> .ak-section:first-child),
+	&:has(> .wp-block-post-content > .ak-section:first-child) {
+		padding-top: 0;
+	}
+}
+
+// Also when a template puts the sections straight into <main> (the blog: templates/home.html shows the Blog Page pattern).
+.wp-site-blocks > main > .ak-section:first-child,
+.wp-site-blocks .wp-block-post-content > .ak-section:first-child {
+	border-top: var(--wp--custom--header--clearance) solid transparent;
+	background-origin: border-box;
+
+	@media (max-width: #{$bp-tablet - 1}) {
+		border-top-width: var(--wp--custom--header--clearance-phone);
+	}
+}
+
+// ---- Footer ---------------------------------------------------------------------------------------------------
+// Design: "Your Company Main file (12) / Group 6" (1440px). Navy-night band: five page tabs (Accreditation in gold),
+// then the about column (380px: logo, text, bullets, Follow Us + LinkedIn, Refer & Earn) beside the link columns
+// (Main Menu · Courses by Category + Master's (MBA) Programs · Doctorate (DBA) Programs with a Popular badge) and the
+// four offices over a faint world map; under both, the doctorate programs grouped by country. White recognition strip
+// at the bottom. Link lists are menus (MenuRenderer, ak-menu-<location>); on phones the link groups collapse.
+
+$footer-icon-pin: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath d='M172 501C27 291 0 269 0 192 0 86 86 0 192 0s192 86 192 192c0 77-27 99-172 309a24 24 0 0 1-40 0zm20-229a80 80 0 1 0 0-160 80 80 0 0 0 0 160z'/%3E%3C/svg%3E");
+$footer-icon-caret: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 512'%3E%3Cpath d='M31.3 192h257.4c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8a20 20 0 0 1-28.2 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z'/%3E%3C/svg%3E");
+
+.ak-footer {
+	// The design's thin blue dividers.
+	--footer-rule: color-mix(in srgb, var(--wp--preset--color--blue) 45%, var(--wp--preset--color--navy-night));
+
+	font-family: var(--wp--preset--font-family--inter);
+	font-size: var(--wp--preset--font-size--normal);
+	line-height: 1.5;
+
+	a {
+		color: inherit;
+		text-decoration: none;
+
+		&:hover,
+		&:focus-visible {
+			text-decoration: underline;
+		}
+	}
+
+	:where(p, li) {
+		margin: 0;
+	}
+
+	:where(h2, h3, summary) {
+		color: var(--wp--preset--color--white);
+		font-family: var(--wp--preset--font-family--montserrat);
+	}
+
+	&-inner {
+		padding: var(--wp--preset--spacing--40) var(--wp--preset--spacing--20) var(--wp--preset--spacing--48);
+	}
+
+	// ---- Page tabs ----
+	&-tabs {
+		gap: var(--wp--preset--spacing--20);
+		margin: 0 0 var(--wp--preset--spacing--40);
+
+		.wp-block-button__link {
+			padding: var(--wp--preset--spacing--5) var(--wp--preset--spacing--10);
+			border: 1px solid var(--wp--preset--color--white);
+			border-radius: var(--wp--preset--border-radius--3);
+			background: transparent;
+			color: var(--wp--preset--color--white);
+			font-family: var(--wp--preset--font-family--montserrat);
+			font-size: var(--wp--preset--font-size--small);
+			font-weight: 500;
+			line-height: 1.4;
+
+			&:hover,
+			&:focus-visible {
+				background: color-mix(in srgb, var(--wp--preset--color--white) 12%, transparent);
+				text-decoration: none;
+			}
+		}
+
+		.ak-footer-tab-accent .wp-block-button__link {
+			background: var(--wp--preset--color--gold);
+			color: var(--wp--preset--color--navy-night);
+
+			&:hover,
+			&:focus-visible {
+				background: var(--wp--preset--color--gold-dark);
+			}
+		}
+	}
+
+	// ---- About column beside the links ----
+	&-main {
+		display: grid;
+		grid-template-columns: var(--wp--custom--size--380) minmax(0, 1fr);
+		column-gap: var(--wp--preset--spacing--40);
+		align-items: start;
+
+		@media (max-width: #{$bp-footer}) {
+			grid-template-columns: minmax(0, 1fr);
+			row-gap: var(--wp--preset--spacing--40);
+		}
+	}
+
+	&-logo {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-sizing: border-box;
+		width: var(--wp--custom--size--74);
+		height: var(--wp--custom--size--74);
+		border-radius: var(--wp--preset--border-radius--8);
+		background: var(--wp--preset--color--white);
+
+		.wp-block-site-logo {
+			margin: 0;
+			line-height: 0;
+		}
+
+		.wp-block-site-logo img {
+			width: var(--wp--custom--size--62);
+			height: auto;
+		}
+	}
+
+	&-brand {
+		margin: var(--wp--preset--spacing--16) 0 0;
+		font-size: var(--wp--preset--font-size--24);
+		font-weight: 600;
+		line-height: 1.2;
+	}
+
+	&-about {
+		margin: var(--wp--preset--spacing--10) 0 var(--wp--preset--spacing--16);
+		font-size: var(--wp--preset--font-size--14);
+		line-height: 1.6;
+	}
+
+	&-bullets {
+		margin: 0;
+		padding-left: var(--wp--preset--spacing--16);
+		font-size: var(--wp--preset--font-size--14);
+		line-height: 1.6;
+		list-style: disc;
+	}
+
+	&-follow {
+		gap: var(--wp--preset--spacing--12);
+		margin-top: var(--wp--preset--spacing--20);
+		padding-top: var(--wp--preset--spacing--20);
+		border-top: 1px solid var(--footer-rule);
+
+		.ak-footer-follow-label {
+			font-size: var(--wp--preset--font-size--14);
+			font-weight: 700;
+		}
+	}
+
+	&-linkedin {
+		margin: 0;
+		line-height: 0;
+
+		&.wp-block-image img {
+			width: var(--wp--custom--size--88);
+			height: auto;
+		}
+	}
+
+	&-refer {
+		margin-top: var(--wp--preset--spacing--24);
+		padding-bottom: var(--wp--preset--spacing--20);
+		border-bottom: 1px solid var(--footer-rule);
+
+		p {
+			font-size: var(--wp--preset--font-size--small);
+		}
+
+		.wp-block-buttons {
+			margin: var(--wp--preset--spacing--16) 0 0;
+		}
+
+		.wp-block-button .wp-block-button__link {
+			padding: var(--wp--preset--spacing--10) var(--wp--preset--spacing--16);
+			border-radius: var(--wp--preset--border-radius--4);
+			font-size: var(--wp--preset--font-size--small);
+			font-weight: 600;
+			line-height: 1.4;
+		}
+	}
+
+	// ---- Links, then offices over a world map ----
+	&-right {
+		position: relative;
+		isolation: isolate;
+	}
+
+	&-links {
+		display: grid;
+		grid-template-columns: max-content max-content minmax(0, 1fr); // each list on one line, as in the design
+		gap: var(--wp--preset--spacing--30) var(--wp--preset--spacing--36);
+		align-items: start;
+		padding-bottom: var(--wp--preset--spacing--30); // the same room either side of the rule (the offices sit 24px under it; this was 70px)
+		border-bottom: 1px solid var(--footer-rule);
+
+		// Narrower screens: shared columns, the links wrap.
+		@media (max-width: #{$bp-footer-wide - 1}) {
+			grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr) minmax(0, 1.2fr);
+			column-gap: var(--wp--preset--spacing--20);
+		}
+
+		// Phone: one stack of boxed rows, in the phone design's order (Main Menu, Courses, Doctorate, MBA).
+		@media (max-width: #{$bp-tablet - 1}) {
+			display: flex;
+			flex-direction: column;
+			align-items: stretch;
+			gap: var(--wp--preset--spacing--10);
+			padding-bottom: 0;
+			border-bottom: 0;
+
+			> .wp-block-group {
+				display: contents;
+			}
+
+			.ak-footer-acc-main { order: 1; }
+
+			.ak-footer-acc-col-2 { order: 2; }
+
+			.ak-footer-acc-col-4 { order: 3; }
+
+			.ak-footer-acc-col-3 { order: 4; }
+
+			// The newsletter comes after the link groups on phones (it sits in the Doctorate column on wider screens).
+			.ak-footer-news { order: 5; margin-top: var(--wp--preset--spacing--16); }
+		}
+	}
+
+	// Labels only the phone layout shows ("Quick Links", "Our Presence").
+	&-mobile-label {
+		display: none;
+	}
+
+	// Link groups are Details blocks. From 768px up they read as headings over open lists (the script keeps them
+	// open); on phones they are collapsible rows with a caret.
+	&-acc {
+		// The global FAQ look of the Details block is for page content, not the footer.
+		padding: 0;
+		border: 0;
+		font-size: var(--wp--preset--font-size--14);
+
+		> summary {
+			display: block;
+			margin: 0 0 var(--wp--preset--spacing--8);
+			font-size: var(--wp--preset--font-size--normal);
+			font-weight: 700;
+			line-height: 1.4;
+			list-style: none;
+			cursor: default;
+			pointer-events: none;
+
+			&::-webkit-details-marker {
+				display: none;
+			}
+
+			&::marker {
+				content: "";
+			}
+		}
+
+		& + & {
+			margin-top: var(--wp--preset--spacing--24);
+		}
+
+		@media (max-width: #{$bp-tablet - 1}) {
+			padding: 0 var(--wp--preset--spacing--12);
+			border: 1px solid var(--footer-rule);
+			border-radius: var(--wp--preset--border-radius--6);
+
+			& + & {
+				margin-top: 0;
+			}
+
+			> summary {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: var(--wp--preset--spacing--10);
+				box-sizing: border-box;
+				min-height: var(--wp--custom--size--44);
+				margin: 0;
+				padding: var(--wp--preset--spacing--10) 0;
+				font-size: var(--wp--preset--font-size--14);
+				cursor: pointer;
+				pointer-events: auto;
+
+				&::after {
+					content: "";
+					flex: none;
+					width: var(--wp--custom--size--9);
+					height: var(--wp--custom--size--15);
+					margin-left: auto;
+					background: currentcolor;
+					mask: $footer-icon-caret center / contain no-repeat;
+				}
+			}
+
+			&[open] > summary::after {
+				transform: rotate(180deg);
+			}
+
+			.ak-footer-list {
+				padding: 0 0 var(--wp--preset--spacing--12);
+			}
+		}
+	}
+
+	&-list {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+
+		li + li {
+			margin-top: var(--wp--preset--spacing--4);
+		}
+
+		@media (max-width: #{$bp-tablet - 1}) {
+
+			a {
+				display: block;
+				padding-block: var(--wp--preset--spacing--6);
+			}
+
+			li + li {
+				margin-top: 0;
+			}
+		}
+	}
+
+	// Doctorate column: bulleted, underlined links (design).
+	&-list-dba {
+		padding-left: var(--wp--preset--spacing--20);
+		list-style: disc;
+
+		a {
+			text-decoration: underline;
+			text-underline-offset: var(--wp--custom--size--3);
+		}
+
+		li + li {
+			margin-top: var(--wp--preset--spacing--2);
+		}
+	}
+
+	// "Get tech news": a heading, a line and the newsletter form (Contact Form 7 "Newsletter": email + Submit) under the
+	// Doctorate column. The form's fields come from _contact-form-7.scss; here only the footer's colours and layout.
+	&-news {
+		margin-top: var(--wp--preset--spacing--24);
+
+		.ak-footer-news-title {
+			margin: 0;
+			font-size: var(--wp--preset--font-size--normal);
+			font-weight: 700;
+			line-height: 1.4;
+		}
+
+		.ak-footer-news-text {
+			margin: var(--wp--preset--spacing--4) 0 var(--wp--preset--spacing--12);
+			font-size: var(--wp--preset--font-size--caption);
+			opacity: 0.85;
+		}
+
+		.wpcf7-form { gap: var(--wp--preset--spacing--8); }
+
+		.wpcf7-form input[type="email"] {
+			max-width: var(--wp--custom--size--260);
+			border-color: var(--wp--preset--color--white);
+		}
+
+		.wpcf7-form .wpcf7-submit {
+			min-width: var(--wp--custom--size--135);
+			background: var(--wp--preset--color--white);
+			color: var(--wp--preset--color--navy-night);
+			font-size: var(--wp--preset--font-size--normal);
+		}
+
+		.wpcf7-form .wpcf7-submit:hover { background: var(--wp--preset--color--gold-soft); }
+
+		.wpcf7-form .wpcf7-not-valid-tip { color: var(--wp--preset--color--gold-soft); }
+
+		.wpcf7 form.wpcf7-form .wpcf7-response-output {
+			max-width: var(--wp--custom--size--260);
+			border-color: var(--wp--preset--color--gold-soft);
+			background: transparent;
+			color: var(--wp--preset--color--white);
+			font-size: var(--wp--preset--font-size--caption);
+		}
+
+		.wpcf7 form.wpcf7-form.sent .wpcf7-response-output {
+			border-color: var(--wp--preset--color--green);
+			background: transparent;
+			color: var(--wp--preset--color--white);
+		}
+	}
+
+	&-badge {
+		display: inline-block;
+		margin-left: var(--wp--preset--spacing--8);
+		padding: var(--wp--preset--spacing--2) var(--wp--preset--spacing--6);
+		border-radius: var(--wp--preset--border-radius--3);
+		background: var(--wp--preset--color--gold-soft);
+		color: var(--wp--preset--color--gold-dark);
+		font-family: var(--wp--preset--font-family--inter);
+		font-size: var(--wp--preset--font-size--caption);
+		font-weight: 600;
+		line-height: 1.4;
+		text-transform: uppercase;
+		vertical-align: middle;
+		white-space: nowrap; // with the heading on one line from 1200px up (design: no asterisk, no letter spacing)
+	}
+
+
+	&-offices {
+		position: relative;
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: var(--wp--preset--spacing--20);
+		padding-top: var(--wp--preset--spacing--24);
+
+		@media (max-width: #{$bp-footer-wide - 1}) {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		@media (max-width: #{$bp-narrow}) {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+
+	// Faint world map behind the offices (an image in the markup, loaded lazily; assets/images/theme/world-map.svg),
+	// reaching down beside the about column. Out of the grid's flow.
+	&-map {
+		position: absolute;
+		top: var(--wp--preset--spacing--24);
+		right: 0;
+		left: 0;
+		z-index: -1;
+		margin: 0;
+		pointer-events: none;
+
+		&.wp-block-image img {
+			width: 100%;
+			height: var(--wp--custom--size--260);
+			object-fit: contain;
+			object-position: center top;
+			opacity: 0.08;
+			filter: invert(1);
+		}
+	}
+
+	&-h {
+		margin: 0 0 var(--wp--preset--spacing--8);
+		font-size: var(--wp--preset--font-size--normal);
+		font-weight: 700;
+		line-height: 1.3;
+	}
+
+	&-address {
+		position: relative;
+		padding-left: var(--wp--preset--spacing--23);
+		font-size: var(--wp--preset--font-size--14);
+		line-height: 1.5;
+
+		&::before {
+			content: "";
+			position: absolute;
+			top: var(--wp--preset--spacing--4);
+			left: 0;
+			width: var(--wp--custom--size--14);
+			height: var(--wp--custom--size--14);
+			background: currentcolor;
+			mask: $footer-icon-pin center / contain no-repeat;
+		}
+	}
+
+	// ---- Doctorate programs by country ----
+	// One Details block: on phones the "Doctorate Programs by Country" row; from 768px up always open, no summary, a
+	// heading per country over its row of links divided by "|" (design).
+	&-countries {
+		margin-top: var(--wp--preset--spacing--30);
+
+		@media (min-width: #{$bp-tablet}) {
+
+			.ak-footer-acc-regions > summary {
+				display: none;
+			}
+		}
+	}
+
+	&-country-h {
+		display: inline-block;
+		margin: var(--wp--preset--spacing--24) 0 var(--wp--preset--spacing--10);
+		padding-bottom: var(--wp--preset--spacing--4);
+		border-bottom: var(--wp--custom--size--2) solid var(--wp--preset--color--white);
+		font-size: var(--wp--preset--font-size--small);
+		font-weight: 700;
+		line-height: 1.4;
+
+		&:first-child {
+			margin-top: 0;
+		}
+	}
+
+	&-country-list {
+		display: flex;
+		flex-wrap: wrap;
+		row-gap: var(--wp--preset--spacing--4);
+		margin: 0;
+		padding: 0;
+		font-size: var(--wp--preset--font-size--14);
+		list-style: none;
+
+		li:not(:last-child)::after {
+			content: "|";
+			margin-inline: var(--wp--preset--spacing--6);
+		} // a divider between links, none after the last one
+	}
+
+	// ---- White recognition strip ----
+	&-copy { font-size: var(--wp--preset--font-size--small); }
+
+	&-bottom {
+		box-sizing: border-box;
+		min-height: var(--wp--custom--size--82);
+		padding: var(--wp--preset--spacing--10) var(--wp--preset--spacing--20);
+
+		> .wp-block-group {
+			min-height: var(--wp--custom--size--62);
+		}
+
+		a {
+			color: inherit;
+		}
+	}
+
+	&-logos {
+		gap: var(--wp--preset--spacing--20);
+		padding-right: var(--wp--preset--spacing--4); // not margin: core's flex layout resets child margins
+
+		.wp-block-image {
+			margin: 0;
+		}
+
+		.wp-block-image img {
+			display: block;
+			width: var(--wp--custom--size--103);
+			height: auto;
+		}
+
+		@media (max-width: #{$bp-footer}) {
+			padding-right: 0;
+		}
+	}
+
+	// ---- Phone: the phone design's order ----
+	// Logo beside the name, about text, Follow Us, Quick Links (boxed rows), Doctorate Programs by Country, Our
+	// Presence (offices as boxed rows with a flag), the referral, the page tabs as a list, then the copyright on navy
+	// over the recognition logos. The column wrappers step aside (display: contents) so every part is a grid item.
+	@media (max-width: #{$bp-tablet - 1}) {
+
+		&-inner {
+			display: grid;
+			grid-template-areas:
+				"logo brand"
+				"about about"
+				"follow follow"
+				"quick quick"
+				"links links"
+				"countries countries"
+				"presence presence"
+				"offices offices"
+				"refer refer"
+				"tabs tabs";
+			grid-template-columns: auto minmax(0, 1fr);
+			column-gap: var(--wp--preset--spacing--12);
+			align-items: center;
+			padding: var(--wp--preset--spacing--24) var(--wp--preset--spacing--16);
+		}
+
+		// The constrained layout centres its children with auto side margins (core marks them !important), which
+		// shrinks a grid item to its content; a full width leaves the margins nothing to take.
+		#{&}-inner > * {
+			box-sizing: border-box;
+			width: 100%;
+		}
+
+		:is(&-main, &-about-col, &-right) {
+			display: contents;
+		}
+
+		&-logo {
+			grid-area: logo;
+			width: var(--wp--custom--size--50);
+			height: var(--wp--custom--size--50);
+			border-radius: var(--wp--preset--border-radius--6);
+
+			.wp-block-site-logo img {
+				width: var(--wp--custom--size--42);
+			}
+		}
+
+		&-brand {
+			grid-area: brand;
+			margin: 0;
+			font-size: var(--wp--preset--font-size--large);
+		}
+
+		&-about {
+			grid-area: about;
+			margin: var(--wp--preset--spacing--12) 0 0;
+			font-size: var(--wp--preset--font-size--caption);
+		}
+
+		&-bullets {
+			display: none;
+		}
+
+		&-follow {
+			grid-area: follow;
+			gap: var(--wp--preset--spacing--8);
+			margin-top: var(--wp--preset--spacing--12);
+			padding: 0 0 var(--wp--preset--spacing--16);
+			border-top: 0;
+			border-bottom: 1px solid var(--footer-rule);
+		}
+
+		&-mobile-label {
+			display: block;
+			margin-top: var(--wp--preset--spacing--16);
+			margin-bottom: var(--wp--preset--spacing--10);
+			font-size: var(--wp--preset--font-size--14);
+			font-weight: 700;
+		}
+
+		&-quick {
+			grid-area: quick;
+		}
+
+		&-links {
+			grid-area: links;
+		}
+
+		&-countries {
+			grid-area: countries;
+			margin-top: var(--wp--preset--spacing--10);
+			padding-bottom: var(--wp--preset--spacing--16);
+			border-bottom: 1px solid var(--footer-rule);
+		}
+
+		&-country-h {
+			margin-top: var(--wp--preset--spacing--12);
+			font-size: var(--wp--preset--font-size--14);
+		}
+
+		&-country-list {
+			display: block;
+			margin-bottom: var(--wp--preset--spacing--4);
+			font-size: var(--wp--preset--font-size--14);
+
+			li {
+				padding-block: var(--wp--preset--spacing--4);
+				border-bottom: 1px solid var(--footer-rule);
+			}
+
+			li::after {
+				content: none;
+			}
+		}
+
+		&-presence {
+			grid-area: presence;
+		}
+
+		&-offices {
+			grid-area: offices;
+			grid-template-columns: minmax(0, 1fr);
+			gap: var(--wp--preset--spacing--8);
+			padding-top: 0;
+		}
+
+		&-map {
+			top: 0;
+		}
+
+		// Each office: a boxed row with its round flag, the address and phone.
+		&-office {
+			display: flex;
+			align-items: center;
+			gap: var(--wp--preset--spacing--10);
+			padding: var(--wp--preset--spacing--8) var(--wp--preset--spacing--12);
+			border: 1px solid var(--footer-rule);
+			border-radius: var(--wp--preset--border-radius--6);
+
+			&::before {
+				content: "";
+				flex: none;
+				width: var(--wp--custom--size--22);
+				height: var(--wp--custom--size--22);
+				border-radius: 50%;
+				background: var(--flag) center / cover no-repeat;
+			}
+
+			.ak-footer-h {
+				display: none;
+			}
+		}
+
+		&-office-ae { --flag: url(../../../assets/images/theme/flag-ae.png); }
+
+		&-office-us { --flag: url(../../../assets/images/theme/flag-us.png); }
+
+		&-office-sg { --flag: url(../../../assets/images/theme/flag-sg.png); }
+
+		&-office-gb { --flag: url(../../../assets/images/theme/flag-gb.png); }
+
+		&-address {
+			padding-left: 0;
+			font-size: var(--wp--preset--font-size--caption);
+
+			&::before {
+				content: none;
+			}
+		}
+
+		&-refer {
+			grid-area: refer;
+			margin-top: var(--wp--preset--spacing--24);
+			padding-bottom: var(--wp--preset--spacing--20);
+			text-align: center;
+
+			p {
+				font-size: var(--wp--preset--font-size--14);
+				font-weight: 600;
+			}
+
+			.wp-block-buttons {
+				justify-content: center;
+				margin-top: var(--wp--preset--spacing--12);
+			}
+
+			.wp-block-button .wp-block-button__link {
+				padding: var(--wp--preset--spacing--6) var(--wp--preset--spacing--14);
+				font-size: var(--wp--preset--font-size--caption);
+			}
+		}
+
+		// Page tabs: a list, Accreditation as a gold bar, then the design's order.
+		&-tabs {
+			grid-area: tabs;
+			flex-direction: column;
+			align-items: stretch;
+			gap: 0;
+			margin: var(--wp--preset--spacing--16) 0 0;
+
+			.wp-block-button {
+				width: 100%;
+			}
+
+			.wp-block-button:nth-child(4) { order: 2; }
+
+			.wp-block-button:nth-child(3) { order: 3; }
+
+			.wp-block-button:nth-child(5) { order: 4; }
+
+			.wp-block-button:nth-child(2) { order: 5; }
+
+			.wp-block-button .wp-block-button__link {
+				width: 100%;
+				box-sizing: border-box;
+				padding: var(--wp--preset--spacing--8) var(--wp--preset--spacing--14);
+				border: 0;
+				border-bottom: 1px solid var(--footer-rule);
+				border-radius: 0;
+				font-size: var(--wp--preset--font-size--14);
+				text-align: left;
+			}
+
+			.ak-footer-tab-accent .wp-block-button__link {
+				border-radius: var(--wp--preset--border-radius--3);
+			}
+		}
+
+		// Copyright on the navy band, the logos in one row on white.
+		&-bottom {
+			padding: 0;
+
+			> .wp-block-group {
+				flex-direction: column;
+				align-items: stretch;
+				gap: 0;
+			}
+		}
+
+		&-copy {
+			padding: var(--wp--preset--spacing--12) var(--wp--preset--spacing--16);
+			border-top: 1px solid var(--footer-rule);
+			background: var(--wp--preset--color--navy-night);
+			color: var(--wp--preset--color--white);
+			font-size: var(--wp--preset--font-size--caption);
+			text-align: center;
+		}
+
+		&-logos {
+			flex-wrap: nowrap;
+			justify-content: space-between;
+			gap: var(--wp--preset--spacing--8);
+			padding: var(--wp--preset--spacing--10) var(--wp--preset--spacing--16);
+
+			.wp-block-image img {
+				width: var(--wp--custom--size--50);
+			}
+		}
+	}
+}
+
+// Footer "Follow Us": the LinkedIn logo is 22px tall, so its link gets a 44px tap target, pulled back so the row keeps
+// its height. Last in the file: it outranks the footer's plain link rules above.
+.ak-footer .ak-footer-follow .ak-footer-linkedin a {
+	display: inline-flex;
+	align-items: center;
+	min-height: var(--wp--custom--size--44);
+	margin-block: calc(-1 * var(--wp--preset--spacing--10));
+}
+
+@keyframes ak-nav-panel-in {
+
+	from { translate: 100% 0; }
+
+	to { translate: 0 0; }
+}

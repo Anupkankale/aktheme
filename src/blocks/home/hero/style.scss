@@ -1,0 +1,630 @@
+/* AK Hero (ak/hero). Root element: .ak-section.hero */
+.ak-section.hero {
+	position: relative;
+	padding: 80px 0 0;
+	background: linear-gradient(135deg, var(--lavender) 0%, #f5f0ed 55%, var(--peach) 100%);
+}
+
+.ak-section.hero::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: -1px; /* 1px past the edge: when the hero ends on a fraction of a pixel, its background no longer shows as a thin line */
+	height: 127px; /* the accreditation card overlaps the gradient by 57px */
+	background: #fff;
+	z-index: 0;
+}
+
+.ak-section .hero-grid {
+	position: relative;
+	z-index: 1;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 354px;
+	gap: 60px;
+	align-items: start; /* text and form card share the container's edges, like every section below */
+}
+
+.ak-section .hero-text { padding: 2px 0 0; }
+
+.ak-section.hero h1 {
+	font-size: clamp(1.75rem, 1.0357rem + 1.4881vw, 2.375rem); /* 28px → 38px */
+	font-weight: 700;
+	line-height: 1.3;
+	color: #000;
+}
+
+.ak-section.hero h1 strong {
+	text-decoration: underline;
+	text-decoration-thickness: 3px;
+	text-underline-offset: 6px;
+}
+
+.ak-section .hero-lead {
+	margin: 18px 0 30px;
+	font-size: clamp(1rem, 0.85rem + 0.45vw, 1.25rem); /* 16px → 20px */
+	line-height: 1.75;
+	color: #000;
+	max-width: 650px;
+}
+
+.ak-section .h-stats {
+	display: flex;
+	gap: 30px;
+	flex-wrap: wrap;
+	margin: 0 0 27px -7px;
+}
+
+/* Each stat: laurel | number + label | mirrored laurel. The laurels are decoration, so they live in CSS; the text sits
+   between them, clear of the leaves. */
+.ak-section .h-stat {
+	display: grid;
+	grid-template-columns: 54px auto 54px;
+	align-items: center;
+}
+
+.ak-section .h-stat::before,
+.ak-section .h-stat::after {
+	content: "";
+	grid-row: 1 / span 2;
+	width: 54px;
+	aspect-ratio: 71 / 111;
+	background: url(../../../../images/theme/laurel-light.png) center / contain no-repeat;
+}
+
+/* laurel-light.png is the right half (its bottom curves left): the left one is mirrored, so both curve in under the text. */
+.ak-section .h-stat::before { grid-column: 1; transform: scaleX(-1); }
+
+.ak-section .h-stat::after { grid-column: 3; }
+
+.ak-section .h-stat p {
+	grid-column: 2;
+	position: relative;
+	z-index: 1;
+	text-align: center;
+	white-space: nowrap;
+	margin: 0 4px;
+}
+
+.ak-section .h-num {
+	font-size: 1.75rem; /* 28px */
+	font-weight: 700;
+	color: #000;
+	line-height: 1.1;
+	align-self: end;
+}
+
+.ak-section .h-num sub { font-size: 0.5em; font-weight: 500; vertical-align: baseline; margin-right: 2px; } /* "upto" */
+.ak-section .h-label {
+	font-size: 0.9375rem;
+	color: #000;
+	font-family: var(--ui);
+	line-height: 1.35;
+	align-self: start;
+}
+
+/* Advisor form card: holds any form plugin's shortcode (generic field styles; extra polish for Contact Form 7). */
+.ak-section .h-form {
+	background: #fff;
+	border: 1px solid #000;
+	border-radius: 12px;
+	padding: 10px 16px 18px;
+	box-shadow: 0 2px 6px rgba(0,0,0,.08);
+}
+
+.ak-section .h-form :is(h2, h3) {
+	text-align: center;
+	font-size: 1.21875rem; /* 19.5px */
+	font-weight: 700;
+	color: var(--navy);
+	margin-bottom: 10px;
+}
+
+.ak-section .h-form form,
+.ak-section .h-form .ak-cf7-fields {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	margin: 0;
+}
+
+.ak-section .h-form label {
+	font-family: var(--ui);
+	font-size: 1rem;
+	color: #111;
+}
+
+.ak-section .h-form .ak-form-missing {
+	font-family: var(--ui);
+	font-size: 0.9375rem;
+	color: #9a3412;
+	background: #fff7ed;
+	border: 1px dashed #fb923c;
+	border-radius: 8px;
+	padding: 12px 14px;
+}
+
+.ak-section .h-form .wpcf7-form-control-wrap { display: block; }
+
+/* :not() chain keeps specificity above the theme's field rules (e.g. input.wpcf7-form-control.wpcf7-text). */
+.ak-section .h-form :is(input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="hidden"]):not([type="file"]), textarea, select) {
+	width: 100%;
+	font-family: var(--ui);
+	font-size: 1.0625rem;
+	line-height: 1.3;
+	color: #222;
+	background: #fff;
+	border: 1px solid #c9ccd4;
+	border-radius: 10px;
+	padding: 13px 16px;
+	margin: 0;
+	box-shadow: none;
+}
+
+.ak-section .h-form input:focus,
+.ak-section .h-form textarea:focus {
+	outline: 2px solid #dfe5ff;
+	border-color: var(--navy);
+}
+
+.ak-section .h-form ::placeholder { color: #555; opacity: 1; }
+
+.ak-section .h-form :is(input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="hidden"]):not([type="file"]), select:not([multiple])) {
+	height: auto;
+}
+
+/* The country code and the number share one field (the advisor form's own design): no second border inside it, and
+   the code only as wide as it needs, so the number gets the rest of the row. The field rule above is very specific
+   (six :not()s), so these add a never-matching id inside :is() to outrank it. */
+.ak-section .h-form .ak-advisor-form__phone :is(select, input, #ak-phone-field) {
+	border: 0;
+	border-radius: 0;
+	outline: 0;
+}
+
+.ak-section .h-form .ak-advisor-form__phone :is(select, #ak-phone-field) { flex: 0 0 auto; width: auto; border-right: 1px solid var(--wp--preset--color--grey-300); font-family: "Twemoji Country Flags", var(--ui); } /* flags on Windows too (font in _advisor-form.scss) */
+
+.ak-section .h-form .ak-advisor-form__phone :is(input, #ak-phone-field) { flex: 1 1 0; width: 0; min-width: 0; } /* grows into the space left, never wider than the row (no sideways scroll on phones) */
+
+.ak-section .h-form textarea:not([hidden]):not([readonly]):not([disabled]):not([data-ak]):not([data-x]):not([data-y]) {
+	height: var(--wp--custom--size--88); /* a shorter message box keeps the form level with the hero text (UI review) */
+	min-height: var(--wp--custom--size--88);
+	resize: vertical;
+}
+
+/* Form plugins wrap fields in <p> and add <br> (e.g. Contact Form 7's auto-formatting): the card's gap does the spacing. */
+.ak-section .h-form form p { display: contents; }
+
+.ak-section .h-form form br { display: none; }
+
+.ak-section .h-phone {
+	display: flex;
+	align-items: center;
+	border: 1px solid #c9ccd4;
+	border-radius: 10px;
+	background: #fff;
+}
+
+.ak-section .h-phone > .wpcf7-form-control-wrap { flex: 1; }
+
+.ak-section .h-code {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 0 4px 0 9px;
+	flex-shrink: 0;
+	align-self: stretch;
+}
+
+.ak-section .h-code .wpcf7-form-control-wrap { position: absolute; inset: 0; }
+
+.ak-section .h-flag { width: 20px; height: auto; }
+
+.ak-section .h-caret { width: 8px; height: 6px; }
+
+.ak-section .h-form .h-phone .h-code select:not([multiple]):not([size]):not([hidden]) {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	opacity: 0;
+	cursor: pointer;
+	padding: 0;
+	border: 0;
+}
+
+.ak-section .h-form .h-phone input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="hidden"]):not([type="file"]) {
+	border: 0;
+	padding-left: 6px;
+}
+
+.ak-section .h-phone:focus-within { border-color: var(--navy); }
+
+.ak-section .h-form .wpcf7-acceptance .wpcf7-list-item { margin: 0; display: block; }
+
+.ak-section .h-form .wpcf7-acceptance label {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	font-family: var(--ui);
+	font-size: 1rem;
+	line-height: 2;
+	color: #111;
+	cursor: pointer;
+}
+
+/* Plain square checkbox (the theme turns every checkbox into a custom 5px-bordered box). */
+.ak-section .h-form :is(input[type="checkbox"], input[type="radio"]) {
+	-webkit-appearance: auto;
+	appearance: auto;
+	width: 16px;
+	height: 16px;
+	margin-top: 8px;
+	padding: 0;
+	border: 0;
+	flex-shrink: 0;
+	accent-color: var(--navy);
+}
+
+.ak-section .h-form .h-submit-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.ak-section .h-form :is(input[type="submit"], button[type="submit"]) {
+	align-self: flex-start;
+	width: auto;
+	background: var(--navy);
+	color: #fff;
+	border: 0;
+	border-radius: 2px;
+	padding: 10px 26px;
+	font: 500 1.125rem var(--ui);
+	cursor: pointer;
+	margin: 0;
+}
+
+.ak-section .h-form :is(input[type="submit"], button[type="submit"]):hover { background: var(--navy-deep); }
+
+.ak-section .h-form .wpcf7-spinner { margin: 0; }
+
+.ak-section .h-form .wpcf7-not-valid-tip {
+	font-family: var(--ui);
+	font-size: 0.8125rem;
+	color: #e11d48;
+	margin-top: 4px;
+}
+
+.ak-section .h-form .wpcf7-not-valid { border-color: #e11d48 !important; }
+
+.ak-section .h-form .wpcf7-response-output {
+	margin: 4px 0 0;
+	padding: 8px 12px;
+	border-radius: 6px;
+	font-family: var(--ui);
+	font-size: 0.875rem;
+}
+
+.ak-section .h-form .wpcf7 form.sent .wpcf7-response-output { border-color: #059669; color: #065f46; }
+
+.ak-section .h-form .wpcf7 form.invalid .wpcf7-response-output,
+.ak-section .h-form .wpcf7 form.failed .wpcf7-response-output {
+	border-color: #e11d48;
+	color: #9f1239;
+}
+
+/* Space above (off the form) and below (before the next section), and the container's full width. The selector
+   outranks WordPress's flow-layout rule that zeroes the margins of a container's first and last child. */
+.ak-section.hero .ak-container > .ac-card { margin: var(--wp--preset--spacing--32) 0; }
+
+.ak-section .ac-card {
+	position: relative;
+	z-index: 1;
+	background: #fff;
+	border-radius: 20px;
+	box-shadow: 0 2px 4px rgba(0,0,0,.18);
+	padding: var(--wp--preset--spacing--16) var(--wp--preset--spacing--32) var(--wp--preset--spacing--16); /* a shorter strip (UI review) */
+}
+
+.ak-section .ac-title {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 30px;
+	margin: 0;
+	font-size: clamp(1.125rem, 0.95rem + 0.5vw, 1.375rem); /* 18px → 22px */
+	font-weight: 400;
+	color: #000;
+	text-align: center;
+}
+
+.ak-section .ac-title::before,
+.ak-section .ac-title::after {
+	content: "";
+	flex: 1;
+	height: 3px;
+	background: var(--gold);
+	max-width: 210px;
+}
+
+.ak-section .ac-logos {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	align-items: center;
+	margin-top: 24px;
+}
+
+.ak-section .ac-logo {
+	display: grid;
+	place-items: center;
+	padding: 0 12px;
+	border-left: 2px solid #bbb;
+	min-height: 64px;
+}
+
+.ak-section .ac-logo:first-child { border-left: 0; }
+
+.ak-section .ac-logo img {
+	max-height: 90px;
+	width: auto;
+	object-fit: contain;
+}
+
+.ak-section .h-code:focus-within {
+	outline: 3px solid var(--gold);
+	outline-offset: 2px;
+	border-radius: 6px;
+}
+
+@media (max-width: 1100px) {
+
+	.ak-section .hero-grid {
+		grid-template-columns: 1fr;
+		max-width: 720px;
+		margin-inline: auto;
+		gap: 36px;
+	}
+
+	.ak-section .hero-text { padding: 0; }
+
+	.ak-section .h-stats { margin-bottom: 32px; }
+
+	.ak-section .ac-logos { grid-template-columns: repeat(3, 1fr); row-gap: 20px; }
+
+	.ak-section .ac-logo:nth-child(4) { border-left: 0; }
+}
+
+@media (max-width: 640px) {
+
+	.ak-section.hero { padding-top: 24px; }
+
+	.ak-section .h-stat { grid-template-columns: 34px auto 34px; }
+
+	.ak-section .h-stat::before,
+	.ak-section .h-stat::after {
+		width: 34px;
+	}
+
+	.ak-section .h-stat p { margin: 0 2px; min-width: 78px; }
+
+	.ak-section .h-num { font-size: 1.5rem; }
+
+	.ak-section .h-label { font-size: 0.8125rem; }
+
+	.ak-section .h-stats { gap: 6px; justify-content: center; }
+
+	.ak-section .ac-card { padding: 18px 16px; }
+
+	.ak-section .ac-title::before,
+	.ak-section .ac-title::after {
+		max-width: 40px;
+	}
+}
+
+/* One column: centre the text, stats and button */
+@media (max-width: 1100px) {
+
+	.ak-section .hero-text { text-align: center; }
+
+	.ak-section .hero-lead { margin-inline: auto; }
+
+	.ak-section .h-stats { justify-content: center; margin-left: 0; }
+
+	.ak-section .hero-text .wp-block-buttons { justify-content: center; }
+}
+
+/* Logo copies for the phone marquee (view.js) only show on phones */
+.ak-section .ac-logo.is-clone { display: none; }
+
+/* Phones: the logos are one row that scrolls sideways (marquee, or swipe) instead of a tall grid */
+@media (max-width: 640px) {
+
+	.ak-section .ac-logos {
+		display: flex;
+		margin-inline: -16px; /* to the card's edges */
+		overflow-x: auto;
+		scrollbar-width: none;
+		overscroll-behavior-x: contain;
+	}
+
+	.ak-section .ac-logos::-webkit-scrollbar { display: none; }
+
+	.ak-section .ac-logo,
+	.ak-section .ac-logo.is-clone { display: grid; flex: 0 0 132px; min-height: 64px; padding: 0 14px; border-left: 2px solid #ddd; }
+
+	.ak-section .ac-logo:first-child { border-left: 0; }
+
+	.ak-section .ac-logo img { max-height: 64px; }
+}
+
+/* ---------- Style "Dark" (block style, e.g. DBA Course Page): navy background, white text, optional breadcrumb
+   and rating lines above the title, no accreditation card. ---------- */
+.ak-section.hero.is-style-dark {
+	padding: 40px 0 92px;
+	background: #14234b;
+}
+
+.ak-section.hero.is-style-dark::after { content: none; }
+
+.ak-section.hero.is-style-dark :is(h1, .hero-lead, .h-num, .h-label) { color: #fff; }
+
+.ak-section.hero.is-style-dark h1 { font-size: clamp(1.75rem, 1.2649rem + 1.0863vw, 2.34375rem); } /* → 37.5px */
+.ak-section.hero.is-style-dark .hero-lead { margin: 22px 0 36px; font-size: clamp(1rem, 0.8661rem + 0.372vw, 1.21875rem); line-height: 1.45; } /* → 19.5px */
+.ak-section.hero.is-style-dark .wp-block-button__link { min-width: 320px; }
+
+/* The form's bottom lines up with the hero's last button (UI review): no offset at the top, anchored to the row's end */
+.ak-section.hero.is-style-dark .h-form { align-self: end; margin-top: 0; border-color: #fff; }
+
+/* Breadcrumb: Home > DBA > DBA in Cybersecurity */
+.ak-section .h-crumbs {
+	margin-bottom: 9px;
+	color: #999fb0;
+	font-family: var(--ui);
+	font-size: 1.125rem;
+	line-height: 1.4;
+}
+
+.ak-section .h-crumbs a { color: inherit; }
+
+.ak-section .h-crumbs a:is(:hover, :focus-visible) { color: var(--wp--preset--color--navy); text-decoration: underline; }
+
+.ak-section.hero.is-style-dark .h-crumbs a:is(:hover, :focus-visible) { color: var(--wp--preset--color--white); }
+
+/* Rating: the stars are text (★), coloured gold with the last one dimmed */
+.ak-section .h-rating {
+	margin-bottom: 12px;
+	color: var(--wp--preset--color--body-text); /* the light hero (MBA Course Page); white on the dark one, below */
+	font-family: var(--ui);
+	font-size: 1.125rem;
+	line-height: 1.4;
+}
+
+.ak-section .h-rating strong {
+	margin-right: 8px;
+	color: #d69521;
+	font-size: 1.75rem;
+	font-weight: 400;
+	letter-spacing: 2px;
+	vertical-align: -3px;
+}
+
+.ak-section .h-rating em { color: rgba(214, 149, 33, .4); font-style: normal; }
+
+.ak-section.hero.is-style-dark .h-rating { color: var(--wp--preset--color--white); }
+
+@media (max-width: 1100px) {
+
+	.ak-section.hero.is-style-dark .h-form { margin-top: 0; }
+}
+
+@media (max-width: 640px) {
+
+	.ak-section.hero.is-style-dark { padding: 24px 0 48px; }
+
+	.ak-section.hero.is-style-dark .wp-block-button__link { min-width: 0; }
+
+	.ak-section :is(.h-crumbs, .h-rating) { font-size: 1rem; }
+
+	.ak-section .h-rating strong { font-size: 1.375rem; }
+}
+
+/* ---------- Style "Home" (block style, the Home page, pattern "Home (AK)"): centred badge, title, lead and button over a
+   soft gradient image, then a row of graduate cards that glides sideways when it overflows (marquee, see view.js).
+   No form card or logo card here. Tokens only. ---------- */
+.ak-section.hero.is-style-home {
+	padding: var(--wp--preset--spacing--48) 0 0;
+	background: var(--wp--preset--color--lavender); /* add the client's hero image here */
+}
+
+.ak-section.hero.is-style-home::after { content: none; }
+
+.ak-section .hero-home {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+}
+
+.ak-section .h-pill {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--wp--preset--spacing--6);
+	min-height: var(--wp--preset--spacing--32);
+	padding: 0 var(--wp--preset--spacing--26);
+	border-radius: var(--wp--preset--border-radius--16);
+	background: var(--wp--preset--color--white);
+	color: var(--wp--preset--color--navy);
+	font-size: var(--wp--preset--font-size--normal);
+	line-height: 1.75;
+}
+
+.ak-section .h-pill::before {
+	content: "";
+	flex: 0 0 var(--wp--preset--spacing--18);
+	height: var(--wp--preset--spacing--18);
+	background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2311aa63' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 17l6-6 4 4 8-8'/%3E%3Cpath d='M15 7h6v6'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.ak-section.hero.is-style-home h1 {
+	max-width: var(--wp--custom--size--826);
+	margin: var(--wp--preset--spacing--20) auto 0;
+	font-size: var(--wp--preset--font-size--huge);
+	font-weight: 700;
+	line-height: 1.2;
+	text-wrap: balance;
+}
+
+.ak-section.hero.is-style-home .hero-lead {
+	max-width: var(--wp--custom--size--1102);
+	margin: var(--wp--preset--spacing--16) auto 0;
+	font-size: var(--wp--preset--font-size--medium);
+	line-height: 1.5;
+}
+
+.ak-section.hero.is-style-home .hero-lead strong { font-weight: 700; }
+
+.ak-section.hero.is-style-home .wp-block-buttons { justify-content: center; margin-top: var(--wp--preset--spacing--26); }
+
+.ak-section .h-grads {
+	display: flex;
+	justify-content: safe center;
+	gap: var(--wp--custom--scroller--gap);
+	width: min(var(--wp--style--global--wide-size), 100% - var(--wp--preset--spacing--40));
+	margin: var(--wp--preset--spacing--40) auto 0;
+	overflow-x: auto;
+	scrollbar-width: none;
+}
+
+.ak-section .h-grads::-webkit-scrollbar { display: none; }
+
+/* Cards keep their width on every screen: when they are wider than the row (six on the Home page), the row glides (view.js). */
+.ak-section .h-grad { flex: 0 0 var(--wp--custom--size--214); margin: 0; }
+
+.ak-section .h-grad img { display: block; width: 100%; height: auto; }
+
+@media (max-width: 640px) {
+
+	.ak-section.hero.is-style-home { padding: var(--wp--preset--spacing--32) 0 0; }
+
+	.ak-section .h-pill { padding: 0 var(--wp--preset--spacing--16); font-size: var(--wp--preset--font-size--14); text-align: left; }
+
+	.ak-section.hero.is-style-home h1 { font-size: var(--wp--preset--font-size--huge); line-height: 1.17; }
+
+	.ak-section.hero.is-style-home .hero-lead { font-size: var(--wp--preset--font-size--normal); line-height: 1.4; }
+
+	.ak-section .h-grads { width: calc(100% - var(--wp--preset--spacing--20)); margin-top: var(--wp--preset--spacing--26); }
+
+	.ak-section .h-grad { flex-basis: var(--wp--custom--size--155); }
+}
+
+/* Dark hero with the accreditation card (Location page): the card overlaps the bottom edge of the navy band, as in the Figma. */
+.ak-section.hero.is-style-dark:has(.ac-card) { padding-bottom: 0; }
+
+.ak-section.hero.is-style-dark:has(.ac-card)::after {
+	content: "";
+	height: var(--wp--preset--spacing--70);
+}
+
