@@ -1,0 +1,22 @@
+<?php
+/**
+ * Provide a base class for all unit tests by extending WP_UnitTestCase.
+ *
+ * @package AK\Theme
+ */
+
+declare( strict_types = 1 );
+
+namespace AK\Theme\Tests;
+
+use WP_UnitTestCase;
+
+/**
+ * Class TestCase
+ *
+ * @since 1.0.0
+ */
+abstract class TestCase extends WP_UnitTestCase {
+
+	// Shared setup for theme tests belongs here.
+}

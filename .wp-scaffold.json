@@ -1,0 +1,27 @@
+{
+	"name": "AK Theme",
+	"kind": "theme",
+	"version": "1.0.0",
+	"slug": "aktheme",
+	"textDomain": "aktheme",
+	"package": "anupkankale/aktheme",
+	"namespace": "AK\\Theme",
+	"functionPrefix": "aktheme_",
+	"constantPrefix": "AKTHEME",
+	"cssPrefix": "ak-",
+	"features": {
+		"tailwind": false,
+		"hmr": true
+	},
+	"generatedBy": "@rtcamp/wp-tooling init",
+	"examples": {
+		"removed": [
+			"block-extension",
+			"components",
+			"patterns",
+			"settings",
+			"shortcode"
+		]
+	},
+	"generatedAt": "2026-10-27T04:47:56.297Z"
+}

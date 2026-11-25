@@ -1,0 +1,34 @@
+<?php
+/**
+ * Theme logger service.
+ *
+ * @package AK\Theme
+ */
+
+declare( strict_types = 1 );
+
+namespace AK\Theme\Core;
+
+use rtCamp\WPPrimitives\Contracts\Interfaces\Shareable;
+use rtCamp\WPPrimitives\Utils\Logger as FrameworkLogger;
+
+/**
+ * Class Logger
+ *
+ * The theme's shared Logger. Extends the framework Logger, prefixed with the
+ * theme slug, and shared through the container so every part of the theme
+ * writes through one instance (like a singleton, but via the framework
+ * Shareable contract). Stays silent unless WP_DEBUG. Access it from anywhere
+ * via Helpers\Util::logger().
+ *
+ * @since 1.0.0
+ */
+final class Logger extends FrameworkLogger implements Shareable {
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
+		parent::__construct( 'aktheme' );
+	}
+}

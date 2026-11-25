@@ -1,0 +1,52 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "ak/section",
+	"title": "AK Section (blank)",
+	"category": "ak",
+	"icon": "align-wide",
+	"description": "Empty section with the AK design (fonts, buttons, utilities). Build any new section inside it; add u-bg-navy / u-bg-soft / u-bg-card for a background.",
+	"keywords": [
+		"ak",
+		"section",
+		"blank",
+		"container"
+	],
+	"version": "1.0.0",
+	"textdomain": "aktheme",
+	"supports": {
+		"anchor": true,
+		"html": false,
+		"align": [
+			"full"
+		]
+	},
+	"attributes": {
+		"align": {
+			"type": "string",
+			"default": "full"
+		}
+	},
+	"ak": {
+		"tagName": "section",
+		"className": "section ak-blank",
+		"anchor": ""
+	},
+	"editorScript": "file:./index.js",
+	"viewScript": "file:./view.js",
+	"style": [
+		"ak-base",
+		"file:./style-index.css"
+	],
+	"styles": [
+		{
+			"name": "default",
+			"label": "Default",
+			"isDefault": true
+		},
+		{
+			"name": "home",
+			"label": "Home"
+		}
+	]
+}

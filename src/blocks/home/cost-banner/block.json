@@ -1,0 +1,40 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "ak/cost-banner",
+	"title": "AK Cost Banner",
+	"category": "ak",
+	"icon": "money-alt",
+	"description": "Rounded fee card: price, scholarship ribbon and eligibility button.",
+	"keywords": [
+		"ak",
+		"section"
+	],
+	"version": "1.0.0",
+	"textdomain": "aktheme",
+	"supports": {
+		"anchor": true,
+		"html": false
+	},
+	"ak": {
+		"tagName": "section",
+		"className": "cost-banner",
+		"anchor": ""
+	},
+	"editorScript": "file:./index.js",
+	"style": [
+		"ak-base",
+		"file:./style-index.css"
+	],
+	"styles": [
+		{
+			"name": "default",
+			"label": "Default",
+			"isDefault": true
+		},
+		{
+			"name": "home",
+			"label": "Home"
+		}
+	]
+}

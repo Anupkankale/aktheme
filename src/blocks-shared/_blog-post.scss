@@ -1,0 +1,720 @@
+/* Single blog article (templates/single.html) and the article parts editors insert into a post (patterns blog-*).
+   Sections: .bp-nav (navy "AK BLOG" category bar, menu location "blog"), .bp-hero (breadcrumbs, featured image beside
+   the title, byline, LinkedIn share, tag chips) and .bp-main (the article with its author box beside the advisor form
+   and the table of contents built by the blank section's view.js, then the related articles under both).
+   Design: "DBA file 16/10 / Desktop - 1 final". Tokens only. */
+
+/* ---------- Sections ---------- */
+.ak-section.section:is(.bp-hero, .bp-main) { border-top-width: 0; }
+
+/* The design's columns run 1102px wide (169 to 1271 at 1440), in line with the header pill's logo and Contact button. */
+.bp-page .ak-section .ak-container { width: min(var(--wp--custom--size--1102), 100% - 2 * var(--wp--preset--spacing--20)); }
+
+/* The category bar is the page's first section, so it also carries the transparent header clearance (_header-footer.scss):
+   keep the navy inside the padding box, the page shows white behind the floating header as in the design. */
+.wp-site-blocks .ak-section.section.bp-nav {
+	padding-block: 0;
+	background: var(--wp--preset--color--navy-footer);
+	background-clip: padding-box;
+}
+
+/* The header pill reaches lower than the clearance (77px is where a hero's first line goes, not a full-width bar), so
+   the bar also keeps a gap under the pill. */
+.wp-site-blocks > main > .ak-section.bp-nav:first-child { margin-top: var(--wp--preset--spacing--34); }
+
+.ak-section.section.bp-hero { padding-block: var(--wp--preset--spacing--12) var(--wp--preset--spacing--24); }
+
+.ak-section.section.bp-main { padding-block: 0 var(--wp--preset--spacing--70); }
+
+/* ---------- Category bar ---------- */
+.ak-section .bp-nav-inner {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	column-gap: var(--wp--preset--spacing--50);
+	row-gap: var(--wp--preset--spacing--8);
+	min-height: var(--wp--custom--size--72);
+	padding-block: var(--wp--preset--spacing--10);
+	box-sizing: border-box;
+}
+
+.ak-section .bp-brand { margin: 0; font-family: var(--wp--preset--font-family--serif); font-size: var(--wp--preset--font-size--29); font-weight: 700; line-height: 1; }
+
+.ak-section .bp-brand a { color: var(--wp--preset--color--white); text-decoration: none; }
+
+.ak-section .bp-brand span { color: var(--wp--preset--color--gold); }
+
+.ak-section .bp-cats {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--4) var(--wp--preset--spacing--18);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ak-section .bp-cats a {
+	display: inline-block;
+	padding-block: var(--wp--preset--spacing--6) var(--wp--preset--spacing--4);
+	border-bottom: 1px solid transparent;
+	color: var(--wp--preset--color--white);
+	font-family: var(--head);
+	font-size: var(--wp--preset--font-size--small);
+	text-decoration: none;
+}
+
+.ak-section .bp-cats a:is(:hover, :focus-visible, .is-current) { border-bottom-color: var(--wp--preset--color--gold); }
+
+/* ---------- Hero ---------- */
+.ak-section .bp-crumbs-row {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: var(--wp--preset--spacing--10);
+	margin-bottom: var(--wp--preset--spacing--20);
+	font-size: var(--wp--preset--font-size--normal);
+}
+
+.ak-section .bp-crumbs { display: flex; flex-wrap: wrap; gap: var(--wp--preset--spacing--4); color: var(--wp--preset--color--ink); }
+
+.ak-section .bp-crumbs p,
+.ak-section .bp-crumbs .wp-block-post-terms,
+.ak-section .bp-back { margin: 0; }
+
+.ak-section .bp-crumbs a { color: inherit; }
+
+.ak-section .bp-crumbs .wp-block-post-terms a,
+.ak-section .bp-back a { color: inherit; text-decoration: none; }
+
+/* A 44px tall tap area without moving the line. */
+.ak-section .bp-back a { display: inline-block; margin-block: calc(-1 * var(--wp--preset--spacing--12)); padding-block: var(--wp--preset--spacing--12); }
+
+.ak-section .bp-back a:hover,
+.ak-section .bp-crumbs .wp-block-post-terms a:hover { text-decoration: underline; }
+
+.ak-section .bp-head {
+	display: grid;
+	grid-template-columns: minmax(0, 600fr) minmax(0, 492fr); /* image 602px beside a 494px title column at 1440 */
+	gap: var(--wp--preset--spacing--36);
+	align-items: start; /* the title starts level with the top of the image (design) */
+}
+
+/* The title column reaches 30px past the sidebar's edge (design), so "Detection & Prevention" keeps one line. */
+@media (min-width: 1200px) {
+
+	.ak-section .bp-head { margin-right: calc(-1 * var(--wp--preset--spacing--30)); }
+}
+
+/* No featured image: the title block takes the article column's width (it squeezed into the image's half before). */
+.ak-section .bp-head:not(:has(.bp-cover)) { grid-template-columns: minmax(0, 1fr) var(--wp--custom--size--313); margin-right: 0; }
+
+.ak-section .bp-cover { margin: 0; }
+
+.ak-section .bp-cover img { width: 100%; height: auto; aspect-ratio: 603 / 290; object-fit: cover; }
+
+.ak-section .bp-title { margin: 0; font-size: var(--wp--preset--font-size--huge); font-weight: 700; line-height: 1.2; }
+
+/* Title over a ruled meta block: byline then tag chips on the left, "Share this Resource" over the LinkedIn logo on the
+   right (design). The meta group is layout-transparent so its two parts and the tags share one grid. */
+.ak-section .bp-head-text {
+	display: grid;
+	grid-template-areas: "title title" "byline share" "tags share";
+	grid-template-columns: minmax(0, 1fr) auto;
+	column-gap: var(--wp--preset--spacing--20);
+	align-content: start;
+}
+
+.ak-section .bp-head-text > .bp-title { grid-area: title; }
+
+.ak-section .bp-meta { display: contents; }
+
+.ak-section .bp-head-text :is(.bp-byline, .bp-share) {
+	margin-top: var(--wp--preset--spacing--20);
+	padding-top: var(--wp--preset--spacing--10);
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+.ak-section .bp-byline { grid-area: byline; align-self: start; display: flex; flex-wrap: wrap; align-items: center; gap: var(--wp--preset--spacing--4); color: var(--wp--preset--color--muted); font-size: var(--wp--preset--font-size--normal); }
+
+.ak-section .bp-byline > * { margin: 0; }
+
+.ak-section .bp-byline .wp-block-post-date::before { content: "|"; margin-right: var(--wp--preset--spacing--8); }
+
+/* "Share this Resource" with a share icon, the LinkedIn logo under it, both on the right (design). The tag chips
+   then rise beside the logo, under the byline. */
+.ak-section .bp-share { display: flex; flex-direction: column; align-items: flex-end; gap: var(--wp--preset--spacing--6); grid-area: share; margin-left: calc(-1 * var(--wp--preset--spacing--20)); padding-left: var(--wp--preset--spacing--20); }
+
+.ak-section .bp-share > * { margin: 0; }
+
+.ak-section .bp-share-label { display: flex; align-items: center; gap: var(--wp--preset--spacing--8); color: var(--wp--preset--color--ink); font-size: var(--wp--preset--font-size--normal); }
+
+.ak-section .bp-share-label::after {
+	content: "";
+	width: var(--wp--custom--size--16);
+	height: var(--wp--custom--size--16);
+	padding: var(--wp--preset--spacing--2);
+	border-radius: var(--wp--preset--border-radius--4);
+	background: color-mix(in srgb, var(--wp--preset--color--pink) 12%, var(--wp--preset--color--white)) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ec3d78' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='18' cy='5' r='3'/%3E%3Ccircle cx='6' cy='12' r='3'/%3E%3Ccircle cx='18' cy='19' r='3'/%3E%3Cpath d='m8.6 13.5 6.8 4M15.4 6.5l-6.8 4'/%3E%3C/svg%3E") center / var(--wp--custom--size--14) no-repeat content-box;
+}
+
+.ak-section .bp-share .bp-linkedin img { height: var(--wp--custom--size--26); }
+
+/* LinkedIn logo (assets/images/theme/linkedin-logo.svg): the share link and the author link. */
+.ak-section .bp-linkedin { display: inline-flex; align-items: center; min-height: var(--wp--custom--size--44); line-height: 0; } /* 44px tap target */
+
+.ak-section .bp-linkedin img { width: auto; height: var(--wp--custom--size--22); }
+
+.ak-section .bp-linkedin:is(:hover, :focus-visible) { opacity: 0.85; }
+
+/* Tag chips: red, green and blue in turn, as in the design. */
+.ak-section .bp-tags { display: flex; flex-wrap: wrap; gap: var(--wp--preset--spacing--8); grid-area: tags; margin-top: var(--wp--preset--spacing--12); }
+
+.ak-section .bp-tags a {
+	--chip: var(--wp--preset--color--danger);
+	padding: var(--wp--preset--spacing--4) var(--wp--preset--spacing--8);
+	border: 1px solid var(--chip);
+	border-radius: var(--wp--preset--border-radius--4);
+	background: color-mix(in srgb, var(--chip) 14%, var(--wp--preset--color--white));
+	color: var(--chip);
+	font-size: var(--wp--preset--font-size--caption);
+	line-height: 1.4;
+	text-decoration: none;
+}
+
+/* The separators are spaces that would only widen the gaps (the chips fit on one line, as in the design). */
+.ak-section .bp-tags .wp-block-post-terms__separator { display: none; }
+
+.ak-section .bp-tags a:nth-of-type(3n + 2) { --chip: var(--wp--preset--color--green); }
+
+.ak-section .bp-tags a:nth-of-type(3n) { --chip: var(--wp--preset--color--blue); }
+
+.ak-section .bp-tags a:is(:hover, :focus-visible) { background: color-mix(in srgb, var(--chip) 26%, var(--wp--preset--color--white)); }
+
+/* ---------- Article and sidebar ---------- */
+.ak-section .bp-layout {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) var(--wp--custom--size--313); /* article 769px, sidebar 313px (design) */
+	gap: var(--wp--preset--spacing--20);
+}
+
+.ak-section .bp-article { min-width: 0; }
+
+/* The whole sidebar stays in view while the article scrolls: the advisor form (the Blog Page's card, .bl-form in
+   _blog-page.scss), then the table of contents. It is never taller than the screen: the form keeps its
+   size and the table of contents list gives up height (it scrolls inside, with its fade). */
+.ak-section .bp-aside {
+	--bp-sticky-top: var(--wp--custom--header--main-clearance); /* clears the floating header, also when it slides back in */
+	position: sticky;
+	top: var(--bp-sticky-top);
+	align-self: start;
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--20);
+	max-height: calc(100vh - var(--bp-sticky-top) - var(--wp--preset--spacing--16));
+
+	/* Position and height move together, so the bottom stays put while the header slides. */
+	transition: top var(--wp--custom--motion--base) ease, max-height var(--wp--custom--motion--base) ease;
+}
+
+/* While the header is slid away (header-scroll.js), the 110px header gap is empty: the sidebar moves up under the top
+   edge (and the admin bar), and slides back down with the header. */
+body:has(.wp-site-blocks > header.is-hidden) .ak-section .bp-aside {
+
+	/* A unit is needed: a unitless 0 makes the calc() invalid. */
+	/* stylelint-disable-next-line length-zero-no-unit */
+	--bp-sticky-top: calc(var(--wp-admin--admin-bar--height, 0px) + var(--wp--preset--spacing--16));
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.ak-section .bp-aside { transition: none; }
+}
+
+.ak-section .bp-aside > .bl-form { flex: none; }
+
+/* The article's form card is a little tighter than the Blog page's (design): rounder corners, the title close to the
+   top edge, the fields 9px apart. The submit button keeps its 44px tap height. */
+.ak-section .bp-aside > .bl-form { padding-top: var(--wp--preset--spacing--12); border-radius: var(--wp--preset--border-radius--22); }
+
+.ak-section .bp-aside > .bl-form h2 { margin-bottom: var(--wp--preset--spacing--8); font-size: var(--wp--preset--font-size--medium); }
+
+.ak-section .bp-aside > .bl-form .ak-advisor-form__form { gap: var(--wp--preset--spacing--9); }
+
+.ak-section .bp-sticky {
+	display: flex;
+	flex: 0 1 auto;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--20);
+	min-height: 0;
+}
+
+.ak-section .bp-toc {
+	display: none;
+	padding: var(--wp--preset--spacing--16);
+	border: 1px solid var(--wp--preset--color--grey-300);
+	border-radius: var(--wp--preset--border-radius--12);
+	background: var(--wp--preset--color--white);
+}
+
+.ak-section .bp-toc.is-ready { display: flex; flex: 0 1 auto; flex-direction: column; min-height: 0; }
+
+.ak-section .bp-toc h3 { margin: 0 0 var(--wp--preset--spacing--12); font-size: var(--wp--preset--font-size--medium); font-weight: 700; }
+
+.ak-section .bp-toc-list {
+	flex: 0 1 auto;
+	min-height: var(--wp--custom--size--110); /* about three items, however short the screen */
+	max-height: var(--wp--custom--size--260);
+	margin: 0;
+	padding: 0 var(--wp--preset--spacing--4) 0 0;
+	overflow-y: auto;
+	list-style: none;
+	overscroll-behavior: contain;
+}
+
+/* A slim scrollbar that stays visible (design), also where the system hides scrollbars until you scroll (macOS).
+   Chrome and Safari draw it from the ::-webkit-scrollbar rules; Firefox from the standard properties. */
+.ak-section .bp-toc-list::-webkit-scrollbar { width: var(--wp--custom--size--5-5); }
+
+.ak-section .bp-toc-list::-webkit-scrollbar-track { background: var(--wp--preset--color--card); border-radius: var(--wp--preset--border-radius--pill); }
+
+.ak-section .bp-toc-list::-webkit-scrollbar-thumb { background: var(--wp--preset--color--grey-300); border-radius: var(--wp--preset--border-radius--pill); }
+
+@supports not selector(::-webkit-scrollbar) {
+
+	.ak-section .bp-toc-list { scrollbar-width: thin; scrollbar-color: var(--wp--preset--color--grey-300) var(--wp--preset--color--card); }
+}
+
+/* While more items wait below, the last visible ones fade out (design); view.js sets .is-more. */
+.ak-section .bp-toc-list.is-more { mask-image: linear-gradient(to bottom, var(--wp--preset--color--ink) calc(100% - var(--wp--custom--size--88)), transparent); }
+
+.ak-section .bp-toc-list a {
+	display: block;
+	padding: var(--wp--preset--spacing--8) var(--wp--preset--spacing--16);
+	border-left: var(--wp--custom--size--2) solid var(--wp--preset--color--line);
+	color: var(--wp--preset--color--grey);
+	font-size: var(--wp--preset--font-size--normal);
+	line-height: 1.4;
+	text-decoration: none;
+}
+
+.ak-section .bp-toc-list a:hover { color: var(--wp--preset--color--ink); }
+
+.ak-section .bp-toc-list a.is-active { border-left-color: var(--wp--preset--color--danger); color: var(--wp--preset--color--ink); }
+
+/* ---------- Article body (what editors write) ---------- */
+.ak-section .bp-content { color: var(--wp--preset--color--body-text); font-size: var(--wp--preset--font-size--normal); line-height: 1.5; } /* 16px on 24px lines (design) */
+
+.ak-section .bp-content > * { margin-block: 0 var(--wp--preset--spacing--24); }
+
+.ak-section .bp-content > :last-child { margin-bottom: 0; }
+
+.ak-section .bp-content :is(h2, h3, h4) { margin-block: var(--wp--preset--spacing--34) var(--wp--preset--spacing--14); font-weight: 700; scroll-margin-top: calc(var(--wp--custom--header--clearance) + var(--wp--preset--spacing--20)); }
+
+.ak-section .bp-content h2 { font-size: var(--wp--preset--font-size--25); } /* 25px at every width (blog articles only) */
+
+.ak-section .bp-content h3 { font-size: var(--wp--preset--font-size--large); }
+
+.ak-section .bp-content h4 { font-size: var(--wp--preset--font-size--medium); }
+
+.ak-section .bp-content > :first-child { margin-top: 0; }
+
+.ak-section .bp-content p a,
+.ak-section .bp-content li a { color: var(--wp--preset--color--blue); }
+
+.ak-section .bp-content :is(ul, ol) { padding-left: var(--wp--preset--spacing--24); }
+
+/* Questions and expandable sections (core/details, e.g. the FAQs of articles copied from example.com): a line
+   between them, the question in bold with an arrow that turns when open, the answer below it. Like the text pages'
+   questions (_text-page.scss), with the arrow so they read as something to open. */
+.ak-section .bp-content > .wp-block-details {
+	margin-block: 0;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+.ak-section .bp-content > .wp-block-details:not(.wp-block-details + .wp-block-details) { border-top: 1px solid var(--wp--preset--color--line); }
+
+.ak-section .bp-content > .wp-block-details:not(:has(+ .wp-block-details)) { margin-bottom: var(--wp--preset--spacing--20); }
+
+/* The question is the tap target: the row's room sits inside it (44px or more). */
+.ak-section .bp-content .wp-block-details summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--wp--preset--spacing--12);
+	padding-block: var(--wp--preset--spacing--12);
+	color: var(--wp--preset--color--ink);
+	font-weight: 700;
+	list-style: none;
+	cursor: pointer;
+}
+
+.ak-section .bp-content .wp-block-details summary::-webkit-details-marker { display: none; }
+
+.ak-section .bp-content .wp-block-details summary::after {
+	content: "";
+	flex: none;
+	width: var(--wp--custom--size--14);
+	height: var(--wp--custom--size--14);
+	background: currentcolor;
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+	transition: rotate var(--wp--custom--motion--base) ease;
+}
+
+.ak-section .bp-content .wp-block-details[open] summary::after { rotate: 180deg; }
+
+.ak-section .bp-content .wp-block-details summary:focus-visible { outline: var(--wp--custom--size--2) solid var(--wp--preset--color--gold); outline-offset: var(--wp--custom--size--2); }
+
+.ak-section .bp-content .wp-block-details > :not(summary) { margin: 0 0 var(--wp--preset--spacing--12); }
+
+@media (prefers-reduced-motion: reduce) {
+
+	.ak-section .bp-content .wp-block-details summary::after { transition: none; }
+}
+
+.ak-section .bp-content ul { list-style: disc; }
+
+.ak-section .bp-content ol { list-style: decimal; }
+
+.ak-section .bp-content li + li { margin-top: var(--wp--preset--spacing--4); }
+
+/* Quote: cream panel with a gold rule. */
+.ak-section .bp-content .wp-block-quote {
+	margin-inline: 0;
+	padding: var(--wp--preset--spacing--16) var(--wp--preset--spacing--16) var(--wp--preset--spacing--24);
+	border-left: var(--wp--custom--border-width--4) solid var(--wp--preset--color--gold);
+	background: var(--wp--preset--color--gold-soft);
+}
+
+.ak-section .bp-content .wp-block-quote p { margin: 0; color: var(--wp--preset--color--ink); font-size: var(--wp--preset--font-size--large); font-style: italic; line-height: 1.45; }
+
+.ak-section .bp-content .wp-block-quote cite { display: block; margin-top: var(--wp--preset--spacing--8); color: var(--wp--preset--color--ink); font-size: var(--wp--preset--font-size--14); font-style: normal; font-weight: 700; }
+
+/* Tables: ruled cells (default); the "Comparison" style has a cream header row and grey cells with white gaps. */
+.ak-section .bp-content .wp-block-table { overflow-x: auto; }
+
+.ak-section .bp-content .wp-block-table table { width: auto; min-width: 0; border-collapse: collapse; }
+
+.ak-section .bp-content .wp-block-table :is(th, td) {
+	padding: var(--wp--preset--spacing--12) var(--wp--preset--spacing--16);
+	border: 1px solid var(--wp--preset--color--grey-900);
+	vertical-align: top;
+	text-align: left;
+}
+
+.ak-section .bp-content .wp-block-table th,
+.ak-section .bp-content .wp-block-table thead td { font-weight: 700; }
+
+.ak-section .bp-content .wp-block-table :is(th, td) :is(ul, ol) { margin: 0; }
+
+.ak-section .bp-content .wp-block-table.is-style-table-compare table { border-spacing: var(--wp--preset--spacing--4); border-collapse: separate; }
+
+.ak-section .bp-content .wp-block-table.is-style-table-compare :is(th, td) {
+	min-width: var(--wp--custom--size--110);
+	border: 0;
+	background: var(--wp--preset--color--card);
+	text-align: center;
+	vertical-align: middle;
+}
+
+.ak-section .bp-content .wp-block-table.is-style-table-compare :is(thead :is(th, td), tr:first-child > th) {
+	border: 1px solid var(--wp--preset--color--gold-soft);
+	background: var(--wp--preset--color--cream);
+	font-weight: 400;
+}
+
+/* TL;DR box (pattern blog-tldr). */
+.ak-section .bp-tldr {
+	padding: var(--wp--preset--spacing--10) var(--wp--preset--spacing--16) var(--wp--preset--spacing--16);
+	border: 1px solid var(--wp--preset--color--sky);
+	border-radius: var(--wp--preset--border-radius--8);
+	background: color-mix(in srgb, var(--wp--preset--color--lavender) 50%, var(--wp--preset--color--white));
+}
+
+.ak-section .bp-tldr-title {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--10);
+	margin: 0 0 var(--wp--preset--spacing--12);
+	padding-bottom: var(--wp--preset--spacing--8);
+	border-bottom: 1px solid var(--wp--preset--color--grey-300);
+	color: var(--wp--preset--color--ink);
+	font-family: var(--wp--preset--font-family--serif);
+	font-size: var(--wp--preset--font-size--card-title);
+	font-weight: 700;
+}
+
+.ak-section .bp-tldr-title::before {
+	content: "";
+	width: var(--wp--custom--size--26);
+	height: var(--wp--custom--size--26);
+	flex: none;
+	background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2315294e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z'/%3E%3Cpath d='m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z'/%3E%3Cpath d='M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.ak-section .bp-tldr ol {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--wp--preset--spacing--8) var(--wp--preset--spacing--24);
+	margin: 0;
+	padding-left: var(--wp--preset--spacing--20);
+}
+
+.ak-section .bp-tldr li + li { margin-top: 0; }
+
+/* A one-point TL;DR (a one-sentence excerpt, templates/single.html via SinglePost) runs the full width. */
+.ak-section .bp-tldr ol:has(> li:only-child) { grid-template-columns: minmax(0, 1fr); }
+
+/* Program card (pattern blog-program-cta): text on a light blue panel beside a photo. */
+.ak-section .bp-cta-card {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) var(--wp--custom--size--214); /* the text, then the photo */
+	overflow: hidden; /* the full width of the article column, as the banner below it */
+	border: 1px solid var(--wp--preset--color--sky);
+	border-radius: var(--wp--preset--border-radius--8);
+	background: color-mix(in srgb, var(--wp--preset--color--sky) 55%, var(--wp--preset--color--white)); /* light blue, as the author box */
+}
+
+/* Compact spacing (design): the card stays about as tall as the photo (584 x 700) is at its column's width, so the
+   photo keeps its edges, where the IEEE and Scopus badges are; any trim comes off the bottom (photo anchored at the top). */
+.ak-section .bp-cta-text { padding: var(--wp--preset--spacing--16) var(--wp--preset--spacing--24); }
+
+.ak-section .bp-cta-title {
+	margin: 0 0 var(--wp--preset--spacing--8);
+	padding-bottom: var(--wp--preset--spacing--8);
+	border-bottom: 1px solid var(--wp--preset--color--grey-300);
+	color: var(--wp--preset--color--ink);
+	font-family: var(--head);
+	font-size: var(--wp--preset--font-size--24);
+	font-weight: 700;
+	line-height: 1.25;
+}
+
+.ak-section .bp-cta-text p { margin: 0 0 var(--wp--preset--spacing--12); }
+
+.ak-section .bp-cta-card:not(.bp-cta-courses) .wp-block-button__link { min-height: var(--wp--custom--size--44); padding-block: 0; }
+
+.ak-section .bp-cta-text .wp-block-buttons { margin: 0; }
+
+.ak-section .bp-cta-img { height: 100%; margin: 0; }
+
+.ak-section .bp-cta-img img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+
+/* The course-list version of the card (the "Explore Our Top-Rated Courses" call-out in posts copied from
+   example.com): a compact list of links, and the photo at its own shape at the bottom of its column, so the taller
+   card doesn't crop it. */
+.ak-section .bp-cta-text .bp-cta-list {
+	margin: 0 0 var(--wp--preset--spacing--16);
+	padding-left: var(--wp--preset--spacing--20);
+	font-size: var(--wp--preset--font-size--small);
+	line-height: 1.45;
+}
+
+.ak-section .bp-cta-text .bp-cta-list li + li { margin-top: var(--wp--preset--spacing--4); }
+
+.ak-section .bp-cta-courses .bp-cta-img { align-self: end; height: auto; }
+
+.ak-section .bp-cta-courses .bp-cta-img img { height: auto; }
+
+/* Contact banner (pattern blog-skills-banner): blue gradient, title left, two points and a white button right. */
+.ak-section .bp-banner {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	align-items: center;
+	gap: var(--wp--preset--spacing--24);
+	max-width: var(--wp--custom--size--826);
+	padding: var(--wp--preset--spacing--24) var(--wp--preset--spacing--40);
+	box-sizing: border-box;
+	background: linear-gradient(90deg, color-mix(in srgb, var(--wp--preset--color--blue) 75%, var(--wp--preset--color--navy-deep)), var(--wp--preset--color--blue)); /* blue to lighter blue (design) */
+	color: var(--wp--preset--color--white);
+}
+
+.ak-section .bp-banner-title { margin: 0; color: var(--wp--preset--color--white); font-family: var(--wp--preset--font-family--serif); font-size: var(--wp--preset--font-size--x-large); font-weight: 700; line-height: 1.2; }
+
+.ak-section .bp-banner ul { margin: 0 0 var(--wp--preset--spacing--12); padding-left: var(--wp--preset--spacing--20); }
+
+.ak-section .bp-banner .wp-block-buttons { margin: 0; }
+
+/* Recommended reading (pattern blog-recommended): navy strip, the linked title, a thumbnail on the right. */
+.ak-section .bp-reading {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) var(--wp--custom--size--214);
+	align-items: center;
+	overflow: hidden;
+	max-width: var(--wp--custom--size--826);
+	background: var(--wp--preset--color--navy-band);
+	color: var(--wp--preset--color--white);
+}
+
+.ak-section .bp-reading-text { padding: var(--wp--preset--spacing--16) var(--wp--preset--spacing--20); }
+
+.ak-section .bp-reading-text p { margin: 0; }
+
+.ak-section .bp-reading-label { font-size: var(--wp--preset--font-size--large); font-weight: 500; }
+
+.ak-section .bp-reading-text p a { color: var(--wp--preset--color--white); font-style: italic; text-decoration: none; }
+
+.ak-section .bp-reading-text p a:is(:hover, :focus-visible) { text-decoration: underline; }
+
+.ak-section .bp-reading-img { height: 100%; margin: 0; }
+
+.ak-section .bp-reading-img img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ---------- Author box ---------- */
+.ak-section .bp-author {
+	display: grid;
+	grid-template-areas: "avatar name linkedin bio" "avatar role linkedin bio";
+	grid-template-columns: auto minmax(0, var(--wp--custom--size--155)) auto minmax(0, 1fr);
+	grid-template-rows: auto auto;
+	align-items: center;
+	gap: 0 var(--wp--preset--spacing--20); /* no row gap: the job title sits right under the name */
+	margin-top: var(--wp--preset--spacing--24);
+	padding: var(--wp--preset--spacing--24) var(--wp--preset--spacing--30);
+	background: color-mix(in srgb, var(--wp--preset--color--sky) 55%, var(--wp--preset--color--white)); /* light blue (design) */
+}
+
+.ak-section .bp-author :is(.wp-block-post-author, .wp-block-post-author__content) { display: contents; }
+
+.ak-section .bp-author .wp-block-post-author__avatar { grid-area: avatar; margin: 0 var(--wp--preset--spacing--12) 0 0; }
+
+.ak-section .bp-author .wp-block-post-author__avatar img { width: var(--wp--custom--size--82); height: var(--wp--custom--size--82); object-fit: cover; }
+
+.ak-section .bp-author .wp-block-post-author__avatar img { border-radius: 50%; }
+
+/* Name over the job title (AuthorProfile), both beside the photo; without a job title the name sits in the middle. */
+.ak-section .bp-author .wp-block-post-author__role { grid-area: role; align-self: start; margin: var(--wp--preset--spacing--4) 0 0; color: var(--wp--preset--color--ink); font-size: var(--wp--preset--font-size--14); line-height: 1.4; }
+
+.ak-section .bp-author:has(.wp-block-post-author__role) .wp-block-post-author__name { grid-area: name; align-self: end; }
+
+.ak-section .bp-author .wp-block-post-author__bio:empty { display: none; }
+
+.ak-section .bp-author .wp-block-post-author__name { grid-area: name; grid-row: name-start / role-end; align-self: center; margin: 0; color: color-mix(in srgb, var(--wp--preset--color--blue) 65%, var(--wp--preset--color--navy)); font-family: var(--wp--preset--font-family--serif); font-size: var(--wp--preset--font-size--24); font-weight: 700; line-height: 1.2; }
+
+.ak-section .bp-author .wp-block-post-author__bio { grid-area: bio; margin: 0; color: var(--wp--preset--color--ink); font-size: var(--wp--preset--font-size--normal); line-height: 1.45; }
+
+.ak-section .bp-author > p:has(.bp-author-linkedin) {
+	grid-area: linkedin;
+	align-self: stretch;
+	display: flex;
+	align-items: center;
+	margin: 0;
+	padding-left: var(--wp--preset--spacing--12);
+	border-left: 1px solid var(--wp--preset--color--grey-300);
+}
+
+/* The logo reads bottom to top, as in the design. */
+.ak-section .bp-author-linkedin { position: relative; width: var(--wp--custom--size--27); height: var(--wp--custom--size--110); }
+
+.ak-section .bp-author-linkedin img {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: var(--wp--custom--size--110);
+	max-width: none;
+	height: auto;
+	transform: translate(-50%, -50%) rotate(-90deg);
+}
+
+/* ---------- Related articles ---------- */
+.ak-section .bp-related { margin-top: var(--wp--preset--spacing--24); }
+
+.ak-section .bp-related:not(:has(.bp-rel-card)) { display: none; }
+
+.ak-section .bp-related h2 { margin: 0 0 var(--wp--preset--spacing--14); font-size: var(--wp--preset--font-size--card-title); font-weight: 700; }
+
+/* Under the article and the sidebar (template), 916px wide: wider than the article column, as in the design. */
+.ak-section .bp-rel-grid.wp-block-post-template { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--wp--preset--spacing--16); max-width: var(--wp--custom--size--916); margin: 0; padding: 0; list-style: none; }
+
+.ak-section .bp-rel-card {
+	--edge: var(--wp--preset--color--green);
+	position: relative;
+	height: 100%;
+	box-sizing: border-box;
+	padding: var(--wp--preset--spacing--16) var(--wp--preset--spacing--50) var(--wp--preset--spacing--16) var(--wp--preset--spacing--16);
+	border-bottom: var(--wp--custom--size--2) solid var(--edge);
+	background: var(--wp--preset--color--white);
+	box-shadow: var(--wp--preset--shadow--card);
+	transition: transform var(--wp--custom--motion--fast) ease;
+}
+
+.ak-section .wp-block-post:nth-child(3n + 2) > .bp-rel-card { --edge: var(--wp--preset--color--blue); }
+
+.ak-section .wp-block-post:nth-child(3n) > .bp-rel-card { --edge: var(--wp--preset--color--gold); }
+
+.ak-section .bp-rel-card::after {
+	content: "";
+	position: absolute;
+	top: var(--wp--preset--spacing--16);
+	right: var(--wp--preset--spacing--16);
+	width: var(--wp--custom--size--22);
+	height: var(--wp--custom--size--22);
+	background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 12h15m-6-7 7 7-7 7' fill='none' stroke='%234a79fb' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.ak-section .bp-rel-title { margin: 0; font-size: var(--wp--preset--font-size--medium); font-weight: 700; line-height: 1.35; }
+
+.ak-section .bp-rel-title a { color: var(--wp--preset--color--ink); text-decoration: none; }
+
+/* The title link covers the whole card. */
+.ak-section .bp-rel-title a::after { content: ""; position: absolute; inset: 0; }
+
+.ak-section .bp-rel-card:hover { transform: translateY(calc(-1 * var(--wp--preset--spacing--3))); }
+
+.ak-section .bp-rel-title a:focus-visible { outline: none; }
+
+.ak-section .bp-rel-card:has(a:focus-visible) { outline: var(--wp--custom--size--2) solid var(--wp--preset--color--gold); outline-offset: var(--wp--custom--size--2); }
+
+@media (prefers-reduced-motion: reduce) {
+
+	.ak-section .bp-rel-card { transition: none; }
+
+	.ak-section .bp-rel-card:hover { transform: none; }
+}
+
+/* ---------- Tablet and phone ---------- */
+@media (max-width: 1100px) {
+
+	.ak-section .bp-layout { grid-template-columns: minmax(0, 1fr); }
+
+	.ak-section .bp-head:not(:has(.bp-cover)) { grid-template-columns: minmax(0, 1fr); }
+
+	/* One column: the table of contents moves above the article (at the end it would be no help), the advisor form
+	   follows the article. The sidebar wrappers step aside so their parts are items of the column. */
+	.ak-section :is(.bp-aside, .bp-sticky) { display: contents; }
+
+	.ak-section .bp-layout > * { min-width: 0; }
+
+	.ak-section .bp-toc { order: -1; }
+
+	.ak-section .bp-layout .bl-form { order: 1; width: min(100%, var(--wp--custom--size--544)); box-sizing: border-box; }
+
+	/* Beside the image the title column is narrow: byline, tags and share each get their own line. */
+	.ak-section .bp-head-text { grid-template-areas: "title" "byline" "tags" "share"; grid-template-columns: minmax(0, 1fr); }
+
+	.ak-section .bp-head-text .bp-share { flex-direction: row; justify-content: space-between; align-items: center; margin: var(--wp--preset--spacing--16) 0 0; padding-left: 0; }
+}
+
+@media (max-width: 900px) {
+
+	.ak-section .bp-head { grid-template-columns: minmax(0, 1fr); gap: var(--wp--preset--spacing--20); }
+
+	.ak-section .bp-author { grid-template-areas: "avatar name linkedin" "avatar role linkedin" "bio bio bio"; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-rows: auto auto auto; }
+
+	.ak-section .bp-author .wp-block-post-author__bio { margin-top: var(--wp--preset--spacing--12); }
+
+	.ak-section .bp-rel-grid.wp-block-post-template { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 640px) {
+
+	.ak-section .bp-brand { font-size: var(--wp--preset--font-size--large); }
+
+	.ak-section .bp-tldr ol,
+	.ak-section :is(.bp-cta-card, .bp-banner, .bp-reading) { grid-template-columns: minmax(0, 1fr); }
+
+	.ak-section .bp-cta-img img { aspect-ratio: 4 / 3; }
+
+	.ak-section .bp-cta-courses .bp-cta-img img { aspect-ratio: 16 / 9; object-position: center 20%; }
+
+	.ak-section .bp-banner { padding: var(--wp--preset--spacing--20); }
+}

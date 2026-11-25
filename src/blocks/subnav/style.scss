@@ -1,0 +1,85 @@
+/* AK Section Navigation (ak/subnav). Root element: .ak-section.subnav */
+.ak-section.subnav {
+	position: sticky;
+	top: 0;
+	z-index: 50;
+	background: var(--navy);
+	margin-top: 0; /* directly under the accreditation card */
+}
+
+.admin-bar .ak-section.subnav { top: 32px; }
+
+.ak-section .subnav-inner { overflow-x: auto; scrollbar-width: none; }
+
+.ak-section .subnav-inner::-webkit-scrollbar { display: none; }
+
+.ak-section .subnav-links {
+	display: flex;
+	align-items: stretch;
+	padding-left: 2px;
+}
+
+.ak-section .subnav-links a {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+	padding: 20px 17.5px; /* a slimmer band (UI review) */
+	font-size: 1.0625rem;
+	font-weight: 500;
+	white-space: nowrap;
+	transition: background .2s;
+}
+
+.ak-section .subnav-links a { flex-shrink: 0; }
+
+/* No theme focus outline after a mouse click (keyboard focus keeps the gold ring) */
+.ak-section .subnav-links a:focus:not(:focus-visible) { outline: none; } /* the bar scrolls sideways instead of squashing links */
+.ak-section .subnav-links a:first-child { min-width: 203px; margin-right: 30px; }
+
+.ak-section .subnav-links a:hover,
+.ak-section .subnav-links a.active {
+	background: var(--navy-deep);
+	color: #fff;
+}
+
+@media (max-width: 1100px) {
+
+	.ak-section .subnav-links a:first-child {
+		min-width: 0;
+		margin-right: 0;
+		padding-inline: 18px;
+	}
+}
+
+/* Laptops and tablets: slimmer links, so seven of them fit at 1024px (the last one was cut off at the edge). */
+@media (max-width: 1199px) {
+
+	.ak-section .subnav-links a { padding-inline: var(--wp--preset--spacing--14); font-size: var(--wp--preset--font-size--small); }
+
+	.ak-section .subnav-links a:first-child { padding-inline: var(--wp--preset--spacing--14); }
+}
+
+/* When the bar still scrolls sideways (tablets, phones), the edge with more links behind it fades out (subnav view.js
+   sets the classes), so a cut-off link reads as "scroll for more". */
+.ak-section.subnav.has-more-right .subnav-inner { -webkit-mask-image: linear-gradient(90deg, var(--wp--preset--color--ink) 85%, transparent); mask-image: linear-gradient(90deg, var(--wp--preset--color--ink) 85%, transparent); }
+
+.ak-section.subnav.has-more-left .subnav-inner { -webkit-mask-image: linear-gradient(90deg, transparent, var(--wp--preset--color--ink) 15%); mask-image: linear-gradient(90deg, transparent, var(--wp--preset--color--ink) 15%); }
+
+.ak-section.subnav.has-more-left.has-more-right .subnav-inner { -webkit-mask-image: linear-gradient(90deg, transparent, var(--wp--preset--color--ink) 12%, var(--wp--preset--color--ink) 88%, transparent); mask-image: linear-gradient(90deg, transparent, var(--wp--preset--color--ink) 12%, var(--wp--preset--color--ink) 88%, transparent); }
+
+@media (max-width: 782px) {
+
+	.admin-bar .ak-section.subnav { top: 0; }
+}
+
+@media (max-width: 640px) {
+
+	.ak-section .subnav-links a { padding: 18px 14px; font-size: 0.9375rem; }
+}
+
+/* Phones: the DBA vs Ph.D section is hidden there, so is its link */
+@media (max-width: 640px) {
+
+	.ak-section .subnav-links a[href="#dba-vs-phd"] { display: none; }
+}

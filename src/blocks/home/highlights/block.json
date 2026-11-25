@@ -1,0 +1,53 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "ak/highlights",
+	"title": "AK Highlights",
+	"category": "ak",
+	"icon": "yes-alt",
+	"description": "Overview header, icon list (bold label in gold), button and an illustration.",
+	"keywords": [
+		"ak",
+		"section"
+	],
+	"version": "1.0.0",
+	"textdomain": "aktheme",
+	"supports": {
+		"anchor": true,
+		"html": false,
+		"align": [
+			"full"
+		]
+	},
+	"attributes": {
+		"align": {
+			"type": "string",
+			"default": "full"
+		}
+	},
+	"ak": {
+		"tagName": "section",
+		"className": "highlights",
+		"anchor": "overview"
+	},
+	"editorScript": "file:./index.js",
+	"style": [
+		"ak-base",
+		"file:./style-index.css"
+	],
+	"styles": [
+		{
+			"name": "default",
+			"label": "Default",
+			"isDefault": true
+		},
+		{
+			"name": "wide",
+			"label": "Wide"
+		},
+		{
+			"name": "home",
+			"label": "Home"
+		}
+	]
+}

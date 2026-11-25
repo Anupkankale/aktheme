@@ -1,0 +1,17 @@
+import { each, marquee } from '../../../blocks-shared/view-helpers';
+
+/* Home page: the row of cards glides sideways on its own (no arrows), like the other card rows. It only moves while the
+   cards are wider than the row, pauses on hover and focus, and stays still for people who ask for less motion. */
+each(
+	'.wp-block-ak-step-cards.is-style-home:not(.is-cases) .step-grid',
+	(grid) =>
+		marquee(grid, [...grid.querySelectorAll('.step-card')], { speed: 30 })
+);
+
+/* Home page case studies: the four cards glide too, even on wide screens where they would fit (UI review). */
+each('.wp-block-ak-step-cards.is-style-home.is-cases .step-grid', (grid) =>
+	marquee(grid, [...grid.querySelectorAll('.step-card')], {
+		speed: 30,
+		alwaysMove: true,
+	})
+);

@@ -1,0 +1,55 @@
+<?php
+/**
+ * Title: Offer Banner
+ * Slug: aktheme/offer-banner
+ * Description: A pricing or offer banner. The source of the synced pattern "Offer Banner" (Patterns > My patterns), which the theme creates once; edit that one and it changes on every page. Hidden from the inserter so no unsynced copy is added by mistake.
+ * Categories: ak-sections
+ * Keywords: ak, section, shared
+ * Inserter: no
+ * Viewport Width: 1440
+ *
+ * @package AK\Theme
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+?>
+<!-- wp:ak/cost-banner -->
+<section class="wp-block-ak-cost-banner ak-section cost-banner"><!-- wp:group {"className":"cost-left","layout":{"type":"default"}} -->
+<div class="wp-block-group cost-left"><!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Item Title</h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"price-tag"} -->
+<p class="price-tag">Label</p>
+<!-- /wp:paragraph -->
+</div>
+<!-- /wp:group -->
+<!-- wp:group {"className":"cost-mid","layout":{"type":"default"}} -->
+<div class="wp-block-group cost-mid"><!-- wp:paragraph {"className":"up-to"} -->
+<p class="up-to">Up to</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph {"className":"pct"} -->
+<p class="pct">45%</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph {"className":"merit"} -->
+<p class="merit">Label</p>
+<!-- /wp:paragraph -->
+</div>
+<!-- /wp:group -->
+<!-- wp:group {"className":"cost-right","layout":{"type":"default"}} -->
+<div class="wp-block-group cost-right"><!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Item Title</h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph -->
+<p>Short supporting text for this item. Replace it with your own copy.</p>
+<!-- /wp:paragraph -->
+<!-- wp:buttons -->
+<div class="wp-block-buttons"><!-- wp:button {"className":"btn-white btn-sm btn-arrow"} -->
+<div class="wp-block-button btn-white btn-sm btn-arrow"><a class="wp-block-button__link wp-element-button" href="#advisor-form">Check Your Eligibility</a></div>
+<!-- /wp:button -->
+</div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:group --></section>
+<!-- /wp:ak/cost-banner -->

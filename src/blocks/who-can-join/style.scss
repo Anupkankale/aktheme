@@ -1,0 +1,207 @@
+/* AK Who Can Join (ak/who-can-join). Root element: .ak-section.join */
+
+/* Who can join */
+.ak-section.join { padding: 26px 0 36px; }
+
+.ak-section.join .sub { margin-bottom: 31px; }
+
+/* Accordion | photo 474px, one block across the 1200px container: the same left and right edge as the section header
+   (the Figma frame sat it 70px right of centre). */
+.ak-section .join-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 474px;
+	gap: clamp(24px, 4vw, 48px);
+	align-items: start;
+}
+
+/* Accordion: thin lines between items; the open item's title turns navy and its icon becomes a navy minus.
+   view.js animates the height (content wrapped in .acc-body); the editor shows the plain markup. */
+.ak-section .join-acc details { border-bottom: 1px solid #e4e4e4; }
+
+.ak-section .join-acc details:last-child { border-bottom: 0; }
+
+.ak-section .join-acc summary {
+	padding: 16px 0;
+	color: #000;
+	font: 400 1.25rem/1.3 var(--head);
+	transition: color .25s;
+}
+
+.ak-section .join-acc summary:hover { color: var(--navy); }
+
+.ak-section .join-acc summary::before {
+	content: "";
+	width: 34px;
+	height: 34px;
+	flex-shrink: 0;
+	background: center / contain no-repeat;
+}
+
+.ak-section .join-acc details:nth-child(4n+1) summary::before { background-image: url(../../../images/theme/join-1.png); }
+
+.ak-section .join-acc details:nth-child(4n+2) summary::before { background-image: url(../../../images/theme/join-2.png); }
+
+.ak-section .join-acc details:nth-child(4n+3) summary::before { background-image: url(../../../images/theme/join-3.png); }
+
+.ak-section .join-acc details:nth-child(4n+4) summary::before { background-image: url(../../../images/theme/join-4.png); }
+
+/* +/− icon: a grey circle with a plus; open = navy circle with a white minus */
+.ak-section .join-acc summary::after {
+	content: "";
+	margin-left: auto;
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	flex-shrink: 0;
+	background: #f0f0f0 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath d='M10 15h10M15 10v10' stroke='%23777' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center / 30px no-repeat;
+	transition: background-color .25s, transform .3s;
+}
+
+.ak-section .join-acc details[open]:not(.is-closing) summary { color: var(--navy); font-weight: 500; }
+
+.ak-section .join-acc details[open]:not(.is-closing) summary::after {
+	background-color: var(--navy);
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath d='M10 15h10' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+	transform: rotate(180deg);
+}
+
+.ak-section .join-acc .acc-body { overflow: hidden; }
+
+.ak-section .join-acc details p {
+	padding: 0 50px 18px 52px;
+	font-size: 1rem;
+	line-height: 1.6;
+	color: #333;
+}
+
+.ak-section .join-photo { margin-top: 8px; }
+
+.ak-section .join-photo img { width: 100%; height: auto; border-radius: var(--radius); }
+
+/* A fixed 3:2 frame, so any photo an editor swaps in fills it the same way (the boxed style keeps its photo's own shape) */
+.ak-section.join:not(.is-style-boxed) .join-photo img { aspect-ratio: 3 / 2; object-fit: cover; }
+
+/* A photo with labels (photo-chips) keeps its own frame shape, which places the labels */
+.ak-section.join:not(.is-style-boxed) .join-photo.photo-chips img { aspect-ratio: var(--pc-ratio); }
+
+.ak-section.join .wp-block-buttons.center { margin-top: 10px; }
+
+@media (max-width: 900px) {
+
+	.ak-section .join-grid { grid-template-columns: 1fr; }
+
+	/* width: 100% keeps the photo from shrinking to nothing: with auto margins a grid item sizes to its content, and
+	   a photo with chips (an inline-size container) has no content width, so only its labels were left showing. */
+	.ak-section .join-photo { width: 100%; max-width: 480px; margin-inline: auto; }
+}
+
+@media (max-width: 640px) {
+
+	.ak-section .join-acc details p { padding: 0 0 18px 52px; }
+
+	.ak-section .join-acc summary { font-size: 1.125rem; }
+}
+
+/* Phones: every .section gets the same vertical rhythm (overrides the padding above). */
+@media (max-width: 640px) {
+
+	.ak-section.join { padding: 48px 0; }
+}
+
+/* ---------- Style "Boxed" (block style, e.g. the Curriculum on the DBA Course Page): each item is a grey rounded
+   box with a navy +/−, no icons; photo with rounded corners. ---------- */
+.ak-section.join.is-style-boxed { padding-bottom: 24px; }
+
+.ak-section.join.is-style-boxed .sub { margin-bottom: 22px; }
+
+.ak-section.join.is-style-boxed .join-grid {
+	grid-template-columns: minmax(0, 564px) minmax(0, 422px);
+	gap: 37px;
+	justify-content: center;
+}
+
+.ak-section.join.is-style-boxed .join-acc { display: flex; flex-direction: column; gap: 19px; padding-top: 4px; }
+
+.ak-section.join.is-style-boxed .join-acc details { border: 0; border-radius: 10px; background: #f4f4f4; }
+
+.ak-section.join.is-style-boxed .join-acc summary {
+	position: relative;
+	display: block;
+	min-height: 78px;
+	padding: 26px 56px 26px 24px;
+	font: 400 1.03125rem/1.5 var(--head); /* 16.5px */
+	color: #000;
+}
+
+.ak-section.join.is-style-boxed .join-acc summary strong { font-weight: 700; }
+
+.ak-section.join.is-style-boxed .join-acc summary::before { content: none; }
+
+.ak-section.join.is-style-boxed .join-acc summary::after {
+	position: absolute;
+	right: 22px;
+	top: 26px;
+	width: 26px;
+	height: 26px;
+	background: rgba(255, 255, 255, .55) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Cpath d='M7 13h12M13 7v12' stroke='%23021941' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E") center / 26px no-repeat;
+}
+
+.ak-section.join.is-style-boxed .join-acc details[open]:not(.is-closing) summary { color: #000; font-weight: 400; }
+
+.ak-section.join.is-style-boxed .join-acc details[open]:not(.is-closing) summary::after {
+	background-color: var(--navy);
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Cpath d='M7 13h12' stroke='%23fff' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+.ak-section.join.is-style-boxed .join-acc details p { padding: 0 24px 20px; font-size: 0.9375rem; }
+
+.ak-section.join.is-style-boxed .join-photo { margin-top: 0; }
+
+.ak-section.join.is-style-boxed .join-photo img { border-radius: 24px; }
+
+@media (max-width: 900px) {
+
+	.ak-section.join.is-style-boxed .join-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+
+	.ak-section.join.is-style-boxed .join-acc summary { min-height: 64px; padding: 20px 56px 20px 16px; font-size: 1rem; }
+
+	.ak-section.join.is-style-boxed .join-acc summary::after { right: 16px; top: 19px; }
+
+	.ak-section.join.is-style-boxed .join-acc details p { padding: 0 16px 16px; }
+}
+
+/* Photo with chips (DBA Course Page): the labels are real text over a plain photo, so they stay sharp, translate and
+   can be edited. The chips are placed and sized in container units, so they keep their place at every width. */
+.ak-section .join-photo.has-chips { position: relative; container-type: inline-size; }
+
+.ak-section .join-photo.has-chips .join-pic { margin: 0 0 0 4.8%; }
+
+.ak-section.join .join-photo.has-chips img { aspect-ratio: auto; border-radius: 0; object-fit: fill; } /* the photo draws its own rounded frame */
+
+.ak-section .join-chip {
+	position: absolute;
+	margin: 0;
+	padding: 1.9cqi 2.4cqi;
+	border-radius: var(--wp--preset--border-radius--8);
+	color: var(--wp--preset--color--white);
+	font-family: var(--wp--preset--font-family--montserrat);
+	font-size: clamp(var(--wp--preset--font-size--caption), 3.35cqi, var(--wp--preset--font-size--medium));
+	font-weight: 700;
+	line-height: 1.2;
+	box-shadow: var(--wp--preset--shadow--soft);
+}
+
+/* The two left labels sit on one line each, as wide as their text, with a clear gap between them (they touched when the
+   first one wrapped to two lines). */
+.ak-section .join-chip:is(.is-green, .is-blue) { width: max-content; max-width: 62cqi; }
+
+.ak-section .join-chip.is-green { top: 18.7cqi; left: 0; background: var(--wp--preset--color--green); }
+
+.ak-section .join-chip.is-blue { top: 30.5cqi; left: 0; background: var(--wp--preset--color--blue); }
+
+.ak-section .join-chip.is-card { top: 48.8cqi; left: 63.7cqi; width: 32.1cqi; padding: 2.4cqi; background: var(--wp--preset--color--white); color: var(--wp--preset--color--ink); }
+
+.ak-section .join-chip.is-card strong { color: var(--wp--preset--color--green); font-weight: 700; }
