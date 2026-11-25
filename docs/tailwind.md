@@ -7,8 +7,13 @@ Under the hood, `GenerateTailwindThemePlugin` reads `theme.json` and generates a
 ## Setup
 
 ```bash
-npm run init -- --enable=tailwind --yes
-npm install
+# 1. In functions.php, set AKTHEME_ENABLE_TAILWIND to true.
+# 2. Copy the feature files into place:
+cp bin/features/tailwind/tailwind.css src/css/frontend/tailwind.css
+cp bin/features/tailwind/postcss.config.js postcss.config.js
+# 3. Add the Tailwind packages and rebuild:
+npm install -D tailwindcss @tailwindcss/postcss
+npm run build:prod
 ```
 
 This adds the entry and PostCSS configuration, declares the packages, and turns on the theme's Tailwind enqueue constant — you don't need to edit webpack or recreate the configuration by hand.
@@ -29,4 +34,4 @@ The entry scans the project for utility usage. It imports Tailwind's theme and u
 
 Add `class="underline"` to a text element in a source template, rebuild, and confirm the frontend text is underlined. Put token-based utilities in source files too: classes stored only in the WordPress database are not files scanned by Tailwind.
 
-If compilation fails, confirm npm installation completed and both the entry and generated token file exist. Restart a running watcher after changing dependencies. To disable Tailwind, use `npm run init -- --disable=tailwind --yes`, run `npm install`, and rebuild. Review changes to your editable entry before disabling.
+If compilation fails, confirm npm installation completed and both the entry and generated token file exist. Restart a running watcher after changing dependencies. To disable Tailwind, set AKTHEME_ENABLE_TAILWIND back to false, remove the two copied files, and rebuild. Review changes to your editable entry before disabling.

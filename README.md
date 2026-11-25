@@ -7,7 +7,6 @@ replace per client.
 - **Author:** [Anup Kankale](https://anupkankale.com)
 - **Requires:** WordPress 6.6+, PHP 8.2+
 - **License:** [GPL-2.0-or-later](LICENSE)
-- **Based on:** [rtCamp theme-elementary](https://github.com/rtCamp/theme-elementary) (GPL-2.0-or-later)
 
 ## What's in it
 
@@ -48,8 +47,6 @@ so one edit in Patterns > My patterns changes every page that uses them.
 4. Replace the placeholder text in the header, footer, menus and block defaults (`src/blocks/*/default.html`).
 5. `npm run build:prod`, then activate the theme.
 
-Don't use `npm run init` for this: it is the starter's own setup tool and renames things differently.
-
 ## Develop
 
 ```bash
@@ -63,9 +60,6 @@ More: [docs/getting-started.md](docs/getting-started.md), [docs/design-system.md
 [DEVELOPMENT.md](DEVELOPMENT.md).
 
 ## Credits
-
-Build tooling, linting, test scaffolding and the `inc/` class structure come from rtCamp's
-[theme-elementary](https://github.com/rtCamp/theme-elementary) and `rtcamp/wp-primitives`.
 
 `assets/fonts/twemoji-country-flags.woff2` is the "Twemoji Country Flags" font from
 [country-flag-emoji-polyfill](https://github.com/talkjs/country-flag-emoji-polyfill) (code MIT; flag artwork

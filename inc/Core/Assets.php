@@ -239,8 +239,8 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 	 * Master switch for both sides: webpack only starts the BrowserSync server,
 	 * and PHP only enqueues its client, when this is on. Defaults ON when the key
 	 * is absent. Off values are `0`, `false`, `no`, and `off` (case-insensitive).
-	 * DISABLE_BS still works as a finer client-only override. Toggle it from
-	 * `npm run init` (manage mode) or by editing .env.local directly.
+	 * DISABLE_BS still works as a finer client-only override. Toggle it in
+	 * .env.local.
 	 *
 	 * THIS METHOD IS INTENDED FOR LOCAL DEVELOPMENT ENVIRONMENTS ONLY.
 	 *

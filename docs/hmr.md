@@ -136,7 +136,7 @@ ENABLE_HMR=false
 
 Default is on — the key only needs setting to turn HMR off. Off values are `0`, `false`, `no`, and `off` (case-insensitive). With it off, `npm start` skips the BrowserSync server entirely and PHP skips the client, so there is no live reload and no console noise from a client pointing at a server that isn't running. The `browser-sync` dev dependencies stay installed, so flipping it back on needs no reinstall.
 
-You can also toggle it from `npm run init` (manage mode → Toggle features → HMR), which just flips `ENABLE_HMR` in `.env.local` for you. Since `.env.local` is gitignored, this is a per-developer local setting.
+Toggle it by setting `ENABLE_HMR` in `.env.local`. Since `.env.local` is gitignored, this is a per-developer local setting.
 
 ### Disabling the BrowserSync client only
 

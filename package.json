@@ -63,7 +63,6 @@
 		"build:assets": "wp-scripts build --experimental-modules",
 		"build:blocks:dev": "wp-scripts start --no-watch --blocks-manifest --config ./webpack.blocks.config.js --webpack-src-dir=./src/blocks/ --output-path=./assets/build/blocks/",
 		"build:assets:dev": "wp-scripts start --no-watch --experimental-modules",
-		"init": "./bin/init.js",
 		"rebrand": "node ./bin/rebrand.js",
 		"release:bump": "wp-tooling release:bump",
 		"release:changelog": "wp-tooling release:changelog",
