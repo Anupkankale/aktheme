@@ -87,7 +87,7 @@ class FeaturesTest extends TestCase {
 	 * The instance is namespaced with the theme's context slug.
 	 */
 	public function test_uses_aktheme_context(): void {
-		$this->assertSame( 'ak', ( new FeatureRegistry() )->get_context() );
+		$this->assertSame( 'aktheme', ( new FeatureRegistry() )->get_context() );
 	}
 
 	/**

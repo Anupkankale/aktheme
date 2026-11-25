@@ -72,6 +72,12 @@ const replacements = [
 	[/(?<![A-Za-z0-9])AKTHEME(?![A-Za-z0-9])/g, constant],
 	[/(?<![A-Za-z0-9])aktheme_/g, `${snake}_`],
 	[/<element value="aktheme"\/>/g, `<element value="${snake}"/>`],
+	// The feature-flag context names an option (<context>_features), so it takes the snake form.
+	[/__construct\( 'aktheme' \)/g, `__construct( '${snake}' )`],
+	[
+		/assertSame\( 'aktheme', \( new FeatureRegistry/g,
+		`assertSame( '${snake}', ( new FeatureRegistry`,
+	],
 	[/(?<![A-Za-z0-9_-])aktheme(?![A-Za-z0-9_])/g, slug],
 	[/(?<![A-Za-z0-9_\\-])AK(?![A-Za-z0-9_\\])/g, short],
 ];

@@ -30,6 +30,6 @@ final class FeatureRegistry extends FeatureSelector implements Shareable {
 	 * Constructor.
 	 */
 	public function __construct() {
-		parent::__construct( 'ak' );
+		parent::__construct( 'aktheme' );
 	}
 }
