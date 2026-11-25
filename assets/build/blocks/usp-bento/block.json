@@ -1,0 +1,38 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "ak/usp-bento",
+  "title": "AK USP Bento Grid",
+  "category": "ak",
+  "icon": "grid-view",
+  "description": "Six feature cards in a two-column grid and a button.",
+  "keywords": [
+    "ak",
+    "section"
+  ],
+  "version": "1.0.0",
+  "textdomain": "aktheme",
+  "supports": {
+    "anchor": true,
+    "html": false,
+    "align": [
+      "full"
+    ]
+  },
+  "attributes": {
+    "align": {
+      "type": "string",
+      "default": "full"
+    }
+  },
+  "ak": {
+    "tagName": "section",
+    "className": "section usp",
+    "anchor": "usp"
+  },
+  "editorScript": "file:./index.js",
+  "style": [
+    "ak-base",
+    "file:./style-index.css"
+  ]
+}

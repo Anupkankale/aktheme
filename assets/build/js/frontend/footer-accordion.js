@@ -1,0 +1,1 @@
+(()=>{const e=window.matchMedia("(max-width: 767px)"),t=document.querySelectorAll(".ak-footer-acc"),a=()=>{t.forEach(t=>{t.open=!e.matches})};t.forEach(t=>{t.addEventListener("toggle",()=>{e.matches||t.open||(t.open=!0)})}),a(),e.addEventListener("change",a)})();

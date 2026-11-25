@@ -1,0 +1,38 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "ak/analytics",
+  "title": "AK Image + Bullet List",
+  "category": "ak",
+  "icon": "analytics",
+  "description": "Image beside an Insights header, dotted list and button.",
+  "keywords": [
+    "ak",
+    "section"
+  ],
+  "version": "1.0.0",
+  "textdomain": "aktheme",
+  "supports": {
+    "anchor": true,
+    "html": false,
+    "align": [
+      "full"
+    ]
+  },
+  "attributes": {
+    "align": {
+      "type": "string",
+      "default": "full"
+    }
+  },
+  "ak": {
+    "tagName": "section",
+    "className": "section analytics",
+    "anchor": ""
+  },
+  "editorScript": "file:./index.js",
+  "style": [
+    "ak-base",
+    "file:./style-index.css"
+  ]
+}

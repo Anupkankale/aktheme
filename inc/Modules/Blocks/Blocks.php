@@ -1,0 +1,219 @@
+<?php
+/**
+ * AK section blocks.
+ *
+ * @package AK\Theme
+ */
+
+declare( strict_types = 1 );
+
+namespace AK\Theme\Modules\Blocks;
+
+use rtCamp\WPPrimitives\Contracts\Interfaces\Registrable;
+
+/**
+ * Class Blocks
+ *
+ * Registers the `ak/*` section blocks from the built manifest
+ * (assets/build/blocks/blocks-manifest.php, made by `npm run build:blocks`).
+ * They are static InnerBlocks wrappers: the saved markup is the content, so
+ * there is nothing to render in PHP.
+ *
+ * @since 1.0.0
+ */
+class Blocks implements Registrable {
+
+	/**
+	 * Built blocks directory, relative to the theme root.
+	 */
+	private const BLOCKS_PATH = 'blocks';
+
+	/**
+	 * Sub-folders that group blocks: `home` for the Home page sections, `global` for the ones reused on any page.
+	 */
+	private const GROUPS = [ 'home', 'global' ];
+
+	/**
+	 * Folder of one built block: at the root of the blocks directory, or inside one of the groups.
+	 *
+	 * @param string $blocks_dir Built blocks directory, no trailing slash.
+	 * @param string $slug       Block slug, e.g. `hero`.
+	 *
+	 * @return string The block's folder (the root path when it is in no group).
+	 */
+	public static function block_dir( string $blocks_dir, string $slug ): string {
+		foreach ( self::GROUPS as $group ) {
+			$dir = $blocks_dir . '/' . $group . '/' . $slug;
+
+			if ( is_dir( $dir ) ) {
+				return $dir;
+			}
+		}
+
+		return $blocks_dir . '/' . $slug;
+	}
+
+	/**
+	 * Register hooks.
+	 *
+	 * @since 1.0.0
+	 */
+	public function register_hooks(): void {
+		add_action( 'init', [ $this, 'register_blocks' ] );
+		add_filter( 'block_categories_all', [ $this, 'add_category' ] );
+		add_filter( 'render_block', [ $this, 'add_alignfull' ], 10, 2 );
+		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_editor_assets' ] );
+		add_filter( 'style_loader_src', [ $this, 'version_asset' ] );
+		add_filter( 'script_loader_src', [ $this, 'version_asset' ] );
+	}
+
+	/**
+	 * Register the shared stylesheet and every block in the manifest.
+	 *
+	 * @since 1.0.0
+	 */
+	public function register_blocks(): void {
+		$file = AKTHEME_PATH . '/assets/build/blocks/shared/base-end.css';
+
+		// Shared section styles: a dependency of every block's style, so it loads once and only on pages that use an AK block.
+		// The handle is the last of the shared parts; its dependencies print the others first, with the page-only styles
+		// between them where a page uses them (PageStyles sets the final order).
+		wp_register_style(
+			'ak-base',
+			get_theme_file_uri( 'assets/build/blocks/shared/base-end.css' ),
+			PageStyles::base_handles(),
+			file_exists( $file ) ? (string) filemtime( $file ) : null
+		);
+		wp_style_add_data( 'ak-base', 'path', $file );
+
+		// Not built yet (a fresh clone, or CI without a build): there is nothing to register, and the loader would complain.
+		if ( ! file_exists( get_theme_file_path( 'assets/build/blocks/blocks-manifest.php' ) ) ) {
+			return;
+		}
+
+		// The manifest keys every block by its bare name, but the grouped ones (home/, global/) live one level down.
+		$blocks_dir = get_theme_file_path( 'assets/build/' . self::BLOCKS_PATH );
+		$manifest   = require $blocks_dir . '/blocks-manifest.php';
+
+		foreach ( array_keys( is_array( $manifest ) ? $manifest : [] ) as $name ) {
+			register_block_type( self::block_dir( $blocks_dir, (string) $name ) );
+		}
+	}
+
+	/**
+	 * Add the "AK" inserter category, first in the list.
+	 *
+	 * @param array<int, array<string, mixed>> $categories Block categories.
+	 *
+	 * @return array<int, array<string, mixed>> Block categories.
+	 */
+	public function add_category( array $categories ): array {
+		array_unshift(
+			$categories,
+			[
+				'slug'  => 'ak',
+				'title' => __( 'AK', 'aktheme' ),
+				'icon'  => null,
+			]
+		);
+
+		return $categories;
+	}
+
+	/**
+	 * Add `alignfull` to sections saved before the blocks supported full width.
+	 *
+	 * Their stored markup has no `alignfull` class, so inside the theme's
+	 * constrained page layout they would stay at content width until someone
+	 * edits and saves the page (the editor upgrades the markup on save).
+	 *
+	 * @param string               $html  Block markup.
+	 * @param array<string, mixed> $block Parsed block.
+	 *
+	 * @return string Block markup.
+	 */
+	public function add_alignfull( string $html, array $block ): string {
+		$name = (string) ( $block['blockName'] ?? '' );
+
+		if ( ! str_starts_with( $name, 'ak/' ) || ! empty( $block['attrs']['align'] ) ) {
+			return $html;
+		}
+
+		$registered = \WP_Block_Type_Registry::get_instance()->get_registered( $name );
+		$supports   = $registered->supports['align'] ?? null;
+
+		// Only blocks that support full width; the boxed ones keep their own width. Unregistered (tests) falls back to the name check above.
+		if ( null !== $registered && empty( $supports ) ) {
+			return $html;
+		}
+
+		$tags = new \WP_HTML_Tag_Processor( $html );
+
+		if ( $tags->next_tag() ) {
+			$tags->add_class( 'alignfull' );
+		}
+
+		return $tags->get_updated_html();
+	}
+
+	/**
+	 * Version a built block asset by its file time.
+	 *
+	 * Blocks registered from block.json get that file's `version` ("1.0.0") as the cache key of their CSS and JS, which
+	 * never changes between releases: the CDN and browsers keep serving the first copy for a year. Keying the URL on
+	 * the built file makes every deploy deliver the new assets.
+	 *
+	 * @param string $src Style or script URL.
+	 *
+	 * @return string URL with `ver` set to the file's modification time, or unchanged for anything else.
+	 */
+	public function version_asset( string $src ): string {
+		$base = get_theme_file_uri( 'assets/build/blocks/' );
+
+		if ( ! str_starts_with( $src, $base ) ) {
+			return $src;
+		}
+
+		$relative = (string) strtok( substr( $src, strlen( $base ) ), '?' );
+		$file     = get_theme_file_path( 'assets/build/blocks/' . $relative );
+
+		if ( '' === $relative || ! is_file( $file ) ) {
+			return $src;
+		}
+
+		return add_query_arg( 'ver', (string) filemtime( $file ), remove_query_arg( 'ver', $src ) );
+	}
+
+	/**
+	 * Editor: the "AK button" panel and the default content for newly inserted blocks.
+	 *
+	 * @since 1.0.0
+	 */
+	public function enqueue_editor_assets(): void {
+		// A function call (not a constant path) because this is build output that is not in the repo.
+		$asset_file = get_theme_file_path( 'assets/build/blocks/editor/index.asset.php' );
+
+		if ( file_exists( $asset_file ) ) {
+			$asset = require $asset_file; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable -- Built file.
+
+			wp_enqueue_script(
+				'ak-blocks-editor',
+				get_theme_file_uri( 'assets/build/blocks/editor/index.js' ),
+				$asset['dependencies'],
+				$asset['version'],
+				true
+			);
+		}
+
+		$names = array_filter(
+			array_keys( \WP_Block_Type_Registry::get_instance()->get_all_registered() ),
+			static fn ( string $name ): bool => str_starts_with( $name, 'ak/' )
+		);
+
+		wp_add_inline_script(
+			'wp-blocks',
+			'window.akBlocks = ' . wp_json_encode( [ 'defaults' => ( new Defaults() )->all( $names ) ] ) . ';',
+			'before'
+		);
+	}
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "ak/process",
+  "title": "AK Process Timeline",
+  "category": "ak",
+  "icon": "editor-ol",
+  "description": "Header, then steps on a horizontal timeline (title, dot, text) and a button. Vertical on phones.",
+  "keywords": [
+    "ak",
+    "section"
+  ],
+  "version": "1.0.0",
+  "textdomain": "aktheme",
+  "supports": {
+    "anchor": true,
+    "html": false,
+    "align": [
+      "full"
+    ]
+  },
+  "attributes": {
+    "align": {
+      "type": "string",
+      "default": "full"
+    }
+  },
+  "ak": {
+    "tagName": "section",
+    "className": "section process",
+    "anchor": "admission"
+  },
+  "editorScript": "file:./index.js",
+  "style": [
+    "ak-base",
+    "file:./style-index.css"
+  ]
+}

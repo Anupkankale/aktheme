@@ -1,0 +1,20 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"title": "Eyebrow",
+	"slug": "heading-eyebrow",
+	"blockTypes": [
+		"core/heading"
+	],
+	"styles": {
+		"color": {
+			"text": "var(--wp--custom--eyebrow--color)"
+		},
+		"typography": {
+			"fontFamily": "var(--wp--custom--eyebrow--font-family)",
+			"fontSize": "var(--wp--custom--eyebrow--font-size)",
+			"fontWeight": "var(--wp--custom--eyebrow--font-weight)",
+			"lineHeight": "var(--wp--custom--eyebrow--line-height)"
+		}
+	}
+}
