@@ -10,7 +10,7 @@ declare( strict_types = 1 );
 namespace AK\Theme;
 
 use rtCamp\WPPrimitives\Contracts\Traits\{Singleton, Loader};
-use AK\Theme\Core\{Assets, Components, FeatureRegistry, Logger, Menu, Templates, ThemeSetup};
+use AK\Theme\Core\{Assets, Components, FeatureRegistry, Logger, Menu, Settings, Templates, ThemeSetup};
 
 use AK\Theme\Modules\Blocks\{Blocks, PageStyles};
 
@@ -37,6 +37,7 @@ class Main {
 		Templates::class,
 		FeatureRegistry::class,
 		Logger::class,
+		Settings::class,
 		Blocks::class,
 		PageStyles::class,
 		Images::class,
@@ -49,6 +50,7 @@ class Main {
 		Modules\Menus\MenuRenderer::class,
 		Modules\Blog\SinglePost::class,
 		Modules\Blog\AuthorProfile::class,
+		Modules\Abilities\Registrar::class,
 	];
 
 	/**

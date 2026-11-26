@@ -5,7 +5,7 @@ blocks, the shared (synced) sections, the header, the footer and the templates, 
 replace per client.
 
 - **Author:** [Anup Kankale](https://anupkankale.com)
-- **Requires:** WordPress 6.6+, PHP 8.2+
+- **Requires:** WordPress 6.6+ (6.9+ for the AI abilities), PHP 8.2+
 - **License:** [GPL-2.0-or-later](LICENSE)
 
 ## What's in it
@@ -13,11 +13,11 @@ replace per client.
 | Path | What it is |
 | --- | --- |
 | `theme.json` | Every design token (colours, type, spacing, radius, shadow, widths). Change the brand here first. |
-| `parts/` | `header.html` (pill header: logo, navigation, CTA button), `footer.html` (link columns, newsletter, offices, regions, copyright), `promo-bar.html`. |
+| `parts/` | `header.html` (pill header: logo, navigation, CTA button), `footer.html` (link columns, newsletter, offices, regions, copyright), `promo-bar.html`. Each one points at its markup in `patterns/header.php`, `footer.php` and `promo-bar.php`, so links and images follow the site address. |
 | `templates/` | `index`, `front-page`, `home`, `page`, `single` (blog article with TOC and related posts), `archive`, `search`, `404`, `no-title`. |
 | `src/blocks/` | 18 `ak/*` section blocks: hero, section, tabs, step-cards, highlights, specializations, cost-banner, cta, faq (with FAQPage schema), testimonials, video gallery, achievements, process, usp-bento, who-can-join, analytics, subnav, float-contact. |
 | `patterns/` | Section patterns and the sources of the synced sections (offer banner, testimonials, CTA, achievements, photo). |
-| `inc/` | PHP (`AK\Theme\`): `Core/` (assets, menus, setup), `Modules/Blocks`, `Menus`, `Patterns`, `Media`, `Blog`, `Shortcodes`. |
+| `inc/` | PHP (`AK\Theme\`): `Core/` (assets, menus, setup, settings), `Modules/Abilities`, `Blocks`, `Menus`, `Patterns`, `Media`, `Blog`, `Shortcodes`. |
 | `src/css/`, `src/js/` | Theme-wide styles and scripts (design system, header, footer, mobile menu, footer accordion). |
 | `assets/images/theme/` | Generic icons and `photo-placeholder.webp`. |
 | `bin/rebrand.js` | Renames the framework for a client (see below). |
@@ -28,6 +28,16 @@ Header and footer menus are real WordPress menus (Appearance > Menus), seeded on
 
 Shared sections (offer banner, testimonials, CTA, achievements, photo) become synced patterns on the first admin visit,
 so one edit in Patterns > My patterns changes every page that uses them.
+
+## AI abilities
+
+The design (colours, fonts, global styles), the header and footer, the menus, the shared sections and the pages can be
+read and changed through the WordPress Abilities API, for example by an AI agent connected through the MCP Adapter
+plugin. Changes are saved like Site Editor changes, with revisions, never in the theme's files. See
+[docs/abilities.md](docs/abilities.md).
+
+Site-specific behaviour (the blog article inserts, the company LinkedIn link, the YouTube consent notice) is in the
+theme settings (`aktheme_settings`), not in code: see the same page.
 
 ## Start a new client site
 

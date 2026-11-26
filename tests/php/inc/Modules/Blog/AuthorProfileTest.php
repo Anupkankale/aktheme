@@ -62,15 +62,26 @@ class AuthorProfileTest extends TestCase {
 		$author = self::factory()->user->create( [ 'role' => 'author' ] );
 		wp_set_current_user( $editor );
 
+		$image = self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/canola.jpg' );
+
 		$_POST = [
 			'_wpnonce'             => wp_create_nonce( 'update-user_' . $author ),
 			'aktheme_job_title'    => ' Content Strategist <b>|</b> cSuite ',
-			'aktheme_author_photo' => 'https://example.com/photo.webp',
+			'aktheme_author_photo' => wp_get_attachment_url( $image ),
 		];
 		$this->instance->save( $author );
 
 		$this->assertSame( 'Content Strategist | cSuite', get_user_meta( $author, AuthorProfile::JOB_TITLE, true ) );
-		$this->assertSame( 'https://example.com/photo.webp', get_user_meta( $author, AuthorProfile::PHOTO, true ) );
+		$this->assertSame( $image, (int) get_user_meta( $author, AuthorProfile::PHOTO_ID, true ) );
+
+		// An image from another site is not stored: it clears the photo.
+		$_POST = [
+			'_wpnonce'             => wp_create_nonce( 'update-user_' . $author ),
+			'aktheme_author_photo' => 'https://tracker.example.net/pixel.gif',
+		];
+		$this->instance->save( $author );
+
+		$this->assertSame( '', get_user_meta( $author, AuthorProfile::PHOTO_ID, true ) );
 
 		// Without a valid nonce nothing changes.
 		$_POST = [
@@ -97,15 +108,44 @@ class AuthorProfileTest extends TestCase {
 	 * Test the author photo replaces the avatar, for a user ID, a user object, a post and an email.
 	 */
 	public function test_avatar_uses_the_author_photo(): void {
-		$author = self::factory()->user->create( [ 'user_email' => 'writer@example.com' ] );
-		update_user_meta( $author, AuthorProfile::PHOTO, 'https://example.com/photo.webp' );
+		$author = self::factory()->user->create(
+			[
+				'user_email' => 'writer@example.com',
+				'role'       => 'author',
+			]
+		);
+		$image  = self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/canola.jpg' );
+		update_user_meta( $author, AuthorProfile::PHOTO_ID, $image );
 		$post = self::factory()->post->create_and_get( [ 'post_author' => $author ] );
 
 		foreach ( [ $author, get_user_by( 'id', $author ), $post, 'writer@example.com' ] as $who ) {
-			$this->assertSame( 'https://example.com/photo.webp', $this->instance->avatar( [], $who )['url'] );
+			$this->assertSame( wp_get_attachment_image_url( $image, 'thumbnail' ), $this->instance->avatar( [], $who )['url'] );
 		}
 
 		$this->assertArrayNotHasKey( 'url', $this->instance->avatar( [], self::factory()->user->create() ) );
+	}
+
+	/**
+	 * Test a photo is ignored for a user who can't upload files, and an old photo address only counts when it is an
+	 * image in the Media Library.
+	 *
+	 * @since 1.3.0
+	 */
+	public function test_avatar_ignores_photos_from_elsewhere(): void {
+		$image      = self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/canola.jpg' );
+		$subscriber = self::factory()->user->create( [ 'role' => 'subscriber' ] );
+		update_user_meta( $subscriber, AuthorProfile::PHOTO_ID, $image );
+
+		$this->assertArrayNotHasKey( 'url', $this->instance->avatar( [], $subscriber ) );
+
+		$author = self::factory()->user->create( [ 'role' => 'author' ] );
+		update_user_meta( $author, AuthorProfile::PHOTO, 'https://tracker.example.net/pixel.gif' );
+
+		$this->assertArrayNotHasKey( 'url', $this->instance->avatar( [], $author ) );
+
+		update_user_meta( $author, AuthorProfile::PHOTO, wp_get_attachment_url( $image ) );
+
+		$this->assertSame( $image, $this->instance->photo_id( $author ) );
 	}
 
 	/**

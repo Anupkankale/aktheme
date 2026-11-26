@@ -1,7 +1,7 @@
 /**
  * ESLint configuration.
  *
- * Extends @rtcamp/eslint-config (the shared rtCamp toolchain, which bundles the
+ * Extends `@rtcamp/eslint-config` (the shared rtCamp toolchain, which bundles the
  * WordPress ESLint plugin and the import/jsdoc/prettier rules) so this theme
  * lints identically to the plugin skeleton.
  */
@@ -24,6 +24,8 @@ export default [
 			'**/node_modules/**',
 			'**/vendor/**',
 			'assets/build/**',
+			// Packaged copy of the theme (bin/package.sh), not source.
+			'dist/**',
 			// Jest coverage output (coverageDirectory in tests/js/jest.config.js).
 			'coverage/**',
 			'tests/logs/**',

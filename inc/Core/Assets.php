@@ -109,7 +109,18 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 	 * @filter styles_inline_size_limit
 	 */
 	public function inline_size_limit( int $limit ): int {
-		return max( $limit, self::INLINE_STYLES_LIMIT );
+		/**
+		 * Filters the theme's inline style budget in bytes. Inlining saves render-blocking requests on a first visit
+		 * but the CSS can't be cached between pages; measure on real traffic (CrUX, RUM) before raising it, and lower it
+		 * for sites whose visitors read several pages per visit.
+		 *
+		 * @since 1.3.0
+		 *
+		 * @param int $budget Budget in bytes.
+		 */
+		$budget = (int) apply_filters( 'aktheme_inline_styles_limit', self::INLINE_STYLES_LIMIT );
+
+		return max( $limit, $budget );
 	}
 
 	/**

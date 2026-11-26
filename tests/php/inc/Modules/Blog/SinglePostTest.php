@@ -7,6 +7,7 @@
 
 declare( strict_types = 1 );
 
+use AK\Theme\Core\Settings;
 use AK\Theme\Modules\Blog\SinglePost;
 use AK\Theme\Tests\TestCase;
 
@@ -31,6 +32,25 @@ class SinglePostTest extends TestCase {
 		parent::setUp();
 
 		$this->instance = new SinglePost();
+
+		// The article parts are opt-in per site; most tests below cover them switched on.
+		update_option( Settings::OPTION, array_merge( Settings::defaults(), [ 'blog_article_inserts' => true ] ) );
+	}
+
+	/**
+	 * Test a site that has not switched the article parts on gets the post body unchanged.
+	 *
+	 * @since 1.3.0
+	 */
+	public function test_article_parts_are_off_by_default(): void {
+		delete_option( Settings::OPTION );
+
+		$post_id = self::factory()->post->create( [ 'post_excerpt' => 'One. Two.' ] );
+		$this->go_to( get_permalink( $post_id ) );
+
+		$content = '<div class="entry-content"><h2>A</h2><p>x</p><h2>B</h2></div>';
+
+		$this->assertSame( $content, $this->instance->article_parts( $content, [ 'attrs' => [ 'className' => 'bp-content' ] ] ) );
 	}
 
 	/**
@@ -167,9 +187,10 @@ class SinglePostTest extends TestCase {
 	}
 
 	/**
-	 * Test the author link uses a LinkedIn website, and AK's LinkedIn page for any other website or none.
+	 * Test the author link uses a LinkedIn website, the company page from the settings for any other website, and
+	 * nothing when no company page is set.
 	 */
-	public function test_author_link_falls_back_to_aktheme_linkedin(): void {
+	public function test_author_link_falls_back_to_the_company_page(): void {
 		$author  = self::factory()->user->create( [ 'user_url' => 'https://www.linkedin.com/in/someone/' ] );
 		$post_id = self::factory()->post->create( [ 'post_author' => $author ] );
 		$this->go_to( get_permalink( $post_id ) );
@@ -183,17 +204,12 @@ class SinglePostTest extends TestCase {
 			]
 		);
 
-		$this->assertStringContainsString( 'href="' . SinglePost::AKTHEME_LINKEDIN . '"', $this->instance->author_linkedin() );
-		$this->assertStringContainsString( 'Your Company on LinkedIn', $this->instance->author_linkedin() );
+		$this->assertSame( '', $this->instance->author_linkedin() );
 
-		wp_update_user(
-			[
-				'ID'       => $author,
-				'user_url' => '',
-			]
-		);
+		update_option( Settings::OPTION, array_merge( Settings::defaults(), [ 'company_linkedin_url' => 'https://www.linkedin.com/company/example/' ] ) );
 
-		$this->assertStringContainsString( 'href="' . SinglePost::AKTHEME_LINKEDIN . '"', $this->instance->author_linkedin() );
+		$this->assertStringContainsString( 'href="https://www.linkedin.com/company/example/"', $this->instance->author_linkedin() );
+		$this->assertStringContainsString( get_bloginfo( 'name' ) . ' on LinkedIn', $this->instance->author_linkedin() );
 	}
 
 	/**

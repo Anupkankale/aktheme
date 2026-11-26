@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   ci:
-    uses: rtCamp/wp-shared-workflows/.github/workflows/wp-ci.yml@v1
+    uses: rtCamp/wp-shared-workflows/.github/workflows/wp-ci.yml@6a4d945cc07377a6ce02ae4831a9817fe629d5b1 # v1, pinned to a commit: a moved tag cannot change what CI runs
     with:
       project-type: theme
       enable-phpstan: true
