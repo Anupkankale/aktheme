@@ -7,6 +7,7 @@
 
 declare( strict_types = 1 );
 
+use AK\Theme\Core\Settings;
 use AK\Theme\Modules\Media\Images;
 use AK\Theme\Modules\Media\Video;
 use AK\Theme\Tests\TestCase;
@@ -131,8 +132,9 @@ class MediaTest extends TestCase {
 	}
 
 	/**
-	 * Without WP-Cron, an editor's wp-admin visit downloads the pending thumbnails (a few per page load) and takes them
-	 * off the list; the next render serves the local copy.
+	 * Saving content puts its missing thumbnails on the pending list (a page view never does); without WP-Cron, an
+	 * editor's wp-admin visit downloads them (a few per page load) and takes them off the list; the next render serves
+	 * the local copy.
 	 */
 	public function test_admin_visit_downloads_pending_thumbnails_without_cron(): void {
 		delete_option( Video::OPTION );
@@ -143,6 +145,12 @@ class MediaTest extends TestCase {
 		$block = [ 'attrs' => [ 'className' => 'video-item yt-auto' ] ];
 
 		$video->swap_thumbnail( $html, $block );
+		$this->assertSame( [], get_option( Video::PENDING_OPTION, [] ), 'A page view writes no list.' );
+
+		$post = self::factory()->post->create_and_get(
+			[ 'post_content' => '<!-- wp:image {"className":"video-item yt-auto"} -->' . $html . '<!-- /wp:image -->' ]
+		);
+		$video->queue_from_post( $post->ID, $post );
 		$this->assertArrayHasKey( 'dQw4w9WgXcQ-small', get_option( Video::PENDING_OPTION ) );
 
 		wp_set_current_user( 0 );
@@ -158,6 +166,38 @@ class MediaTest extends TestCase {
 		$this->assertStringContainsString( 'src="' . $stored['url'] . '"', $out );
 
 		wp_delete_file( wp_upload_dir()['basedir'] . substr( $stored['url'], strlen( wp_upload_dir()['baseurl'] ) ) );
+	}
+
+	/**
+	 * A YouTube Embed block keeps no player address until the visitor agrees, and loads its consent script; with the
+	 * setting off, or for another provider, the block is unchanged.
+	 *
+	 * @since 1.3.0
+	 */
+	public function test_youtube_embed_waits_for_consent(): void {
+		$html  = '<figure class="wp-block-embed is-type-video is-provider-youtube"><div class="wp-block-embed__wrapper"><iframe title="A" src="https://www.youtube.com/embed/dQw4w9WgXcQ?feature=oembed"></iframe></div></figure>';
+		$block = [
+			'attrs' => [
+				'url'              => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+				'providerNameSlug' => 'youtube',
+			],
+		];
+		$video = new Video();
+		$video->register_embed_script();
+
+		$out = $video->gate_embed( $html, $block );
+
+		$this->assertStringNotContainsString( 'youtube.com/embed', $out );
+		$this->assertStringContainsString( 'data-ak-youtube="dQw4w9WgXcQ"', $out );
+		$this->assertStringContainsString( 'ak-yt-embed', $out );
+		$this->assertTrue( wp_script_is( Video::EMBED_HANDLE, 'enqueued' ) );
+
+		$vimeo                              = $block;
+		$vimeo['attrs']['providerNameSlug'] = 'vimeo';
+		$this->assertSame( $html, $video->gate_embed( $html, $vimeo ) );
+
+		update_option( Settings::OPTION, array_merge( Settings::defaults(), [ 'youtube_consent' => false ] ) );
+		$this->assertSame( $html, $video->gate_embed( $html, $block ) );
 	}
 
 	/**

@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace AK\Theme\Modules\Blog;
 
+use AK\Theme\Core\Settings;
 use WP_Block;
 use rtCamp\WPPrimitives\Contracts\Interfaces\Registrable;
 
@@ -18,10 +19,11 @@ use rtCamp\WPPrimitives\Contracts\Interfaces\Registrable;
  * Fills the bits of templates/single.html that a block template can't express on its own:
  * - `[aktheme_share_linkedin]`: "Share this Resource" link that shares the current post on LinkedIn.
  * - `[aktheme_author_linkedin]`: the post author's LinkedIn profile, taken from the Website field of their user profile
- *   (AK's LinkedIn page when that address isn't a linkedin.com one).
+ *   (the company page from the theme settings when that address isn't a linkedin.com one, nothing when it is empty).
  * - "Our Related Blogs": a Query Loop whose `query` attribute has `"akRelated": true` lists posts from the current
  *   post's categories, without the post itself (the latest posts when no other post shares a category).
- * - The article parts of the design, added to every post's body (`.bp-content`) unless the post already has its own:
+ * - The article parts of the design, when the `blog_article_inserts` theme setting is on (see Core\Settings), added to
+ *   every post's body (`.bp-content`) unless the post already has its own:
  *   the TL;DR box from the excerpt at the top, the program card before the 2nd heading, the "Build job-ready skills"
  *   banner before the 4th and "Recommended Blog/Reading" (the newest other post) before the 6th; at the end when the
  *   post has fewer headings.
@@ -30,14 +32,6 @@ use rtCamp\WPPrimitives\Contracts\Interfaces\Registrable;
  * @since 1.1.18
  */
 class SinglePost implements Registrable {
-
-	/**
-	 * AK's LinkedIn page: the author box's link when the author has no LinkedIn profile.
-	 *
-	 * @since 1.1.84
-	 * @var string
-	 */
-	public const AKTHEME_LINKEDIN = 'https://www.linkedin.com/';
 
 	/**
 	 * Register hooks.
@@ -67,7 +61,7 @@ class SinglePost implements Registrable {
 		$class = (string) ( $block['attrs']['className'] ?? '' );
 		$post  = get_post();
 
-		if ( ! str_contains( $class, 'bp-content' ) || ! $post || 'post' !== $post->post_type ) {
+		if ( ! Settings::get( 'blog_article_inserts' ) || ! str_contains( $class, 'bp-content' ) || ! $post || 'post' !== $post->post_type ) {
 			return $content;
 		}
 
@@ -165,8 +159,8 @@ class SinglePost implements Registrable {
 	}
 
 	/**
-	 * The post author's LinkedIn profile link, or AK's LinkedIn page when the author's Website isn't a LinkedIn one
-	 * (the author box always shows the logo, as in the design).
+	 * The post author's LinkedIn profile link, or the company page (theme setting `company_linkedin_url`) when the
+	 * author's Website isn't a LinkedIn one. Nothing when neither exists.
 	 *
 	 * @since 1.1.18
 	 *
@@ -183,7 +177,14 @@ class SinglePost implements Registrable {
 		$host = (string) wp_parse_url( $url, PHP_URL_HOST );
 
 		if ( 'linkedin.com' !== $host && ! str_ends_with( $host, '.linkedin.com' ) ) {
-			return $this->linkedin_link( self::AKTHEME_LINKEDIN, __( 'Your Company on LinkedIn', 'aktheme' ), 'bp-linkedin bp-author-linkedin' );
+			$company = (string) Settings::get( 'company_linkedin_url' );
+
+			return '' === $company ? '' : $this->linkedin_link(
+				$company,
+				/* translators: %s: site name. */
+				sprintf( __( '%s on LinkedIn', 'aktheme' ), get_bloginfo( 'name' ) ),
+				'bp-linkedin bp-author-linkedin'
+			);
 		}
 
 		return $this->linkedin_link(

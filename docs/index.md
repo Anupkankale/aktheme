@@ -8,6 +8,7 @@ Start with [Getting Started](getting-started.md).
 | Get the theme running locally      | [Getting Started](getting-started.md)     |
 | Edit source, run checks, and build | [Local development](local-development.md) |
 | Use or change design tokens        | [Design system](design-system.md)         |
+| Let an AI agent change the site    | [AI abilities](abilities.md)              |
 | Add a PHP class or feature by hand | [Development guide](../DEVELOPMENT.md)    |
 
 ## Further reading

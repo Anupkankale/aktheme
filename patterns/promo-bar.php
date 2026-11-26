@@ -1,0 +1,42 @@
+<?php
+/**
+ * Title: Promo bar
+ * Slug: aktheme/promo-bar
+ * Categories: header
+ * Block Types: core/template-part/uncategorized
+ * Inserter: no
+ *
+ * The markup of parts/promo-bar.html. A pattern (PHP) instead of plain HTML so links follow the site address and images
+ * the theme folder: a root-relative "/contact/" or "/wp-content/themes/..." breaks on a site in a sub-directory, a
+ * renamed theme folder or a custom content directory.
+ *
+ * @package AK\Theme
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+?>
+<!-- wp:group {"align":"full","className":"ak-promo","style":{"spacing":{"padding":{"left":"var:preset|spacing|20","right":"var:preset|spacing|20"}}},"backgroundColor":"navy","textColor":"white","layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center","verticalAlignment":"center"}} -->
+<div class="wp-block-group alignfull ak-promo has-white-color has-navy-background-color has-text-color has-background" style="padding-right:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)">
+	<!-- wp:group {"className":"ak-promo-text","layout":{"type":"flex","orientation":"vertical","justifyContent":"left"},"style":{"spacing":{"blockGap":"var:preset|spacing|2"}}} -->
+	<div class="wp-block-group ak-promo-text">
+		<!-- wp:paragraph {"className":"ak-promo-title"} -->
+		<p class="ak-promo-title">Announcement bar. <span class="has-gold-color has-text-color">Highlight a word.</span></p>
+		<!-- /wp:paragraph -->
+
+		<!-- wp:paragraph {"className":"ak-promo-sub"} -->
+		<p class="ak-promo-sub">A short supporting line with an <strong class="has-gold-color has-text-color">offer or date</strong></p>
+		<!-- /wp:paragraph -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:buttons -->
+	<div class="wp-block-buttons">
+		<!-- wp:button {"textColor":"white","className":"is-style-outline"} -->
+		<div class="wp-block-button is-style-outline"><a class="wp-block-button__link has-white-color has-text-color wp-element-button" href="<?php echo esc_url( home_url( '/contact/' ) ); ?>">Learn More →</a></div>
+		<!-- /wp:button -->
+	</div>
+	<!-- /wp:buttons -->
+</div>
+<!-- /wp:group -->

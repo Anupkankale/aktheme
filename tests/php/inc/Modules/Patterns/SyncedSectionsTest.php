@@ -196,4 +196,26 @@ class SyncedSectionsTest extends TestCase {
 		$this->assertSame( '<!-- wp:block {"ref":' . SyncedSections::id( 'offer-banner' ) . '} /-->', SyncedSections::block( 'offer-banner' ) );
 		$this->assertSame( '', SyncedSections::block( 'no-such-section' ) );
 	}
+
+	/**
+	 * Test a section the team deleted is not created again, and pages show the theme's pattern in its place; a
+	 * trashed one falls back the same way.
+	 *
+	 * @since 1.3.0
+	 */
+	public function test_deleted_section_stays_deleted(): void {
+		$feature = new SyncedSections();
+		$feature->seed();
+
+		$offer = SyncedSections::id( 'offer-banner' );
+		wp_delete_post( $offer, true );
+
+		$this->assertSame( 0, $feature->seed() );
+		$this->assertSame( 0, SyncedSections::id( 'offer-banner' ) );
+		$this->assertSame( '<!-- wp:pattern {"slug":"aktheme/offer-banner"} /-->', SyncedSections::block( 'offer-banner' ) );
+
+		wp_trash_post( SyncedSections::id( 'achievements' ) );
+
+		$this->assertSame( '<!-- wp:pattern {"slug":"aktheme/achievements"} /-->', SyncedSections::block( 'achievements' ) );
+	}
 }

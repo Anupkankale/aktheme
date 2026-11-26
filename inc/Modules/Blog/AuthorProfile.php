@@ -19,8 +19,10 @@ use rtCamp\WPPrimitives\Contracts\Interfaces\Registrable;
  * Class AuthorProfile
  *
  * Adds two fields to Users > Profile for the author box under a blog article (templates/single.html):
- * - "Job title": shown under the author's name ("Content Strategist | cSuite Networks").
- * - "Author photo": the address of an image (Media Library > the image > Copy URL), used instead of the Gravatar.
+ * - "Job title": shown under the author's name.
+ * - "Author photo": an image from this site's Media Library (paste its address: Media > Library > the image > Copy URL),
+ *   used instead of the Gravatar. It is stored as the attachment ID, so only images on this site can be used (no
+ *   third-party tracking pixels in comment avatars), and only for users who can upload files.
  * The bio is WordPress's own "Biographical Info" and the LinkedIn link the "Website" field (see SinglePost).
  *
  * @since 1.1.21
@@ -36,12 +38,20 @@ class AuthorProfile implements Registrable {
 	public const JOB_TITLE = 'aktheme_job_title';
 
 	/**
-	 * User meta: author photo address.
+	 * User meta: author photo address. Read only for photos saved before 1.3.0 (see PHOTO_ID).
 	 *
 	 * @since 1.1.21
 	 * @var string
 	 */
 	public const PHOTO = 'aktheme_author_photo';
+
+	/**
+	 * User meta: author photo attachment ID.
+	 *
+	 * @since 1.3.0
+	 * @var string
+	 */
+	public const PHOTO_ID = 'aktheme_author_photo_id';
 
 	/**
 	 * Register hooks.
@@ -72,14 +82,15 @@ class AuthorProfile implements Registrable {
 				<th><label for="aktheme_job_title"><?php esc_html_e( 'Job title', 'aktheme' ); ?></label></th>
 				<td>
 					<input type="text" name="aktheme_job_title" id="aktheme_job_title" class="regular-text" value="<?php echo esc_attr( (string) get_user_meta( $user->ID, self::JOB_TITLE, true ) ); ?>" />
-					<p class="description"><?php esc_html_e( 'Shown under your name in the author box of your articles, e.g. "Content Strategist | cSuite Networks".', 'aktheme' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Shown under your name in the author box of your articles.', 'aktheme' ); ?></p>
 				</td>
 			</tr>
 			<tr>
 				<th><label for="aktheme_author_photo"><?php esc_html_e( 'Author photo', 'aktheme' ); ?></label></th>
 				<td>
-					<input type="url" name="aktheme_author_photo" id="aktheme_author_photo" class="regular-text code" value="<?php echo esc_attr( (string) get_user_meta( $user->ID, self::PHOTO, true ) ); ?>" />
-					<p class="description"><?php esc_html_e( 'Address of a square image: Media > Library > the image > Copy URL. Used instead of the Gravatar picture. Your LinkedIn link is the Website field above.', 'aktheme' ); ?></p>
+					<?php $photo_id = $this->photo_id( $user->ID ); ?>
+					<input type="url" name="aktheme_author_photo" id="aktheme_author_photo" class="regular-text code" value="<?php echo esc_attr( $photo_id ? (string) wp_get_attachment_url( $photo_id ) : '' ); ?>" <?php disabled( ! user_can( $user, 'upload_files' ) ); ?> />
+					<p class="description"><?php esc_html_e( 'Address of a square image from this site\'s Media Library: Media > Library > the image > Copy URL. Images from other sites are not accepted. Used instead of the Gravatar picture. Your LinkedIn link is the Website field above.', 'aktheme' ); ?></p>
 				</td>
 			</tr>
 		</table>
@@ -104,8 +115,18 @@ class AuthorProfile implements Registrable {
 			update_user_meta( $user_id, self::JOB_TITLE, sanitize_text_field( wp_unslash( $_POST['aktheme_job_title'] ) ) );
 		}
 
-		if ( isset( $_POST['aktheme_author_photo'] ) ) {
-			update_user_meta( $user_id, self::PHOTO, esc_url_raw( wp_unslash( $_POST['aktheme_author_photo'] ) ) );
+		if ( isset( $_POST['aktheme_author_photo'] ) && user_can( $user_id, 'upload_files' ) ) {
+			$url = esc_url_raw( wp_unslash( $_POST['aktheme_author_photo'] ) );
+			$id  = $this->attachment_id( $url );
+
+			// Only an image in this site's Media Library; anything else clears the photo.
+			if ( $id && wp_attachment_is_image( $id ) ) {
+				update_user_meta( $user_id, self::PHOTO_ID, $id );
+			} else {
+				delete_user_meta( $user_id, self::PHOTO_ID );
+			}
+
+			delete_user_meta( $user_id, self::PHOTO );
 		}
 	}
 
@@ -120,14 +141,66 @@ class AuthorProfile implements Registrable {
 	 * @return array<string, mixed> Avatar data.
 	 */
 	public function avatar( array $args, $id_or_email ): array {
-		$user_id = $this->user_id( $id_or_email );
-		$photo   = $user_id ? (string) get_user_meta( $user_id, self::PHOTO, true ) : '';
+		$user_id  = $this->user_id( $id_or_email );
+		$photo_id = $user_id ? $this->photo_id( $user_id ) : 0;
+		$size     = (int) ( $args['size'] ?? 96 );
+		$url      = $photo_id ? wp_get_attachment_image_url( $photo_id, $size > 150 ? 'medium' : 'thumbnail' ) : false;
 
-		if ( '' !== $photo ) {
-			$args['url'] = $photo;
+		if ( is_string( $url ) && '' !== $url ) {
+			$args['url'] = $url;
 		}
 
 		return $args;
+	}
+
+	/**
+	 * The author photo of a user who may upload files: the attachment ID, or a photo address saved before 1.3.0 when it
+	 * is an image in this site's Media Library.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param int $user_id User ID.
+	 *
+	 * @return int Attachment ID, or 0.
+	 */
+	public function photo_id( int $user_id ): int {
+		if ( ! user_can( $user_id, 'upload_files' ) ) {
+			return 0;
+		}
+
+		$id = (int) get_user_meta( $user_id, self::PHOTO_ID, true );
+
+		if ( ! $id ) {
+			$legacy = (string) get_user_meta( $user_id, self::PHOTO, true );
+			$id     = $this->attachment_id( $legacy );
+		}
+
+		return $id && wp_attachment_is_image( $id ) ? $id : 0;
+	}
+
+	/**
+	 * The Media Library image at an address on this site, cached (the lookup is a database query).
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param string $url Image address.
+	 *
+	 * @return int Attachment ID, or 0.
+	 */
+	private function attachment_id( string $url ): int {
+		if ( '' === $url ) {
+			return 0;
+		}
+
+		$key = 'author-photo-' . md5( $url );
+		$id  = wp_cache_get( $key, 'aktheme' );
+
+		if ( false === $id ) {
+			$id = attachment_url_to_postid( $url ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.attachment_url_to_postid_attachment_url_to_postid -- Cached here; the VIP helper only exists on VIP.
+			wp_cache_set( $key, $id, 'aktheme', HOUR_IN_SECONDS );
+		}
+
+		return (int) $id;
 	}
 
 	/**

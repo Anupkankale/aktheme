@@ -22,8 +22,8 @@ use WP_Block_Patterns_Registry;
  * design stay shared.
  *
  * The first time an administrator opens wp-admin, this creates each one from the theme's hidden source pattern. It
- * never updates or duplicates them afterwards (the team owns them from then on), and only recreates one that was
- * deleted for good. The page patterns use block() to place them. They are filed under "AK: Shared Sections
+ * never updates, duplicates or recreates them afterwards (the team owns them from then on: one deleted for good stays
+ * deleted, and pages show the theme's pattern in its place). The page patterns use block() to place them. They are filed under "AK: Shared Sections
  * (reusable)" in the inserter and in Patterns.
  *
  * @since 1.1.5
@@ -125,8 +125,10 @@ class SyncedSections implements Registrable {
 		$ids     = (array) get_option( self::OPTION, [] );
 		$missing = self::VERSION !== get_option( self::VERSION_OPTION );
 
+		// Only sections never created count as missing: one the team deleted stays deleted (pages then show the
+		// theme's own pattern in its place).
 		foreach ( array_keys( self::SECTIONS ) as $key ) {
-			$missing = $missing || empty( $ids[ $key ] ) || ! get_post( (int) $ids[ $key ] );
+			$missing = $missing || ! array_key_exists( $key, $ids );
 		}
 
 		if ( $missing ) {
@@ -148,7 +150,15 @@ class SyncedSections implements Registrable {
 		$category = $this->category();
 
 		foreach ( self::SECTIONS as $key => $section ) {
-			$existing = $this->find( $key );
+			$known = empty( $ids[ $key ] ) ? null : get_post( (int) $ids[ $key ] );
+
+			// Created before and deleted since: the team removed it on purpose.
+			if ( ! empty( $ids[ $key ] ) && ! $known ) {
+				continue;
+			}
+
+			// Trashed or drafted counts as existing too: restoring it from the trash must not meet a duplicate.
+			$existing = $known && 'wp_block' === $known->post_type ? (int) $known->ID : $this->find( $key );
 
 			if ( $existing ) {
 				$ids[ $key ] = $existing;
@@ -203,7 +213,8 @@ class SyncedSections implements Registrable {
 		$ids = (array) get_option( self::OPTION, [] );
 		$id  = (int) ( $ids[ $key ] ?? 0 );
 
-		return $id && 'wp_block' === get_post_type( $id ) ? $id : 0;
+		// A trashed or draft synced pattern renders nothing: block() falls back to the theme's pattern instead.
+		return $id && 'wp_block' === get_post_type( $id ) && 'publish' === get_post_status( $id ) ? $id : 0;
 	}
 
 	/**
@@ -230,13 +241,6 @@ class SyncedSections implements Registrable {
 		return '<!-- wp:pattern ' . wp_json_encode( [ 'slug' => self::SECTIONS[ $key ]['pattern'] ], JSON_UNESCAPED_SLASHES ) . ' /-->';
 	}
 
-	/**
-	 * The shared sections' pattern category, created when missing.
-	 *
-	 * @since 1.1.6
-	 *
-	 * @return int Term ID, or 0 when it could not be created.
-	 */
 	/**
 	 * What a new section starts with: a copy of another section's synced pattern (as edited), else the theme pattern.
 	 *
@@ -280,6 +284,13 @@ class SyncedSections implements Registrable {
 		);
 	}
 
+	/**
+	 * The shared sections' pattern category, created when missing.
+	 *
+	 * @since 1.1.6
+	 *
+	 * @return int Term ID, or 0 when it could not be created.
+	 */
 	private function category(): int {
 		$term = get_term_by( 'slug', self::CATEGORY, 'wp_pattern_category' );
 

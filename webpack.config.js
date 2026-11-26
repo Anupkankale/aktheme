@@ -102,7 +102,7 @@ const getPluginName = (plugin) => plugin.constructor.name;
  * Create a predicate that matches one webpack plugin constructor name.
  *
  * @param {string} pluginName Plugin constructor name to match.
- * @return {Function} Predicate for `Array.prototype.filter`.
+ * @return {(plugin: Object) => boolean} Predicate for `Array.prototype.filter`.
  */
 const isPlugin = (pluginName) => (plugin) =>
 	getPluginName(plugin) === pluginName;
@@ -111,7 +111,7 @@ const isPlugin = (pluginName) => (plugin) =>
  * Create a predicate that excludes one webpack plugin constructor name.
  *
  * @param {string} pluginName Plugin constructor name to exclude.
- * @return {Function} Predicate for `Array.prototype.filter`.
+ * @return {(plugin: Object) => boolean} Predicate for `Array.prototype.filter`.
  */
 const isNotPlugin = (pluginName) => (plugin) =>
 	getPluginName(plugin) !== pluginName;
@@ -120,7 +120,7 @@ const isNotPlugin = (pluginName) => (plugin) =>
  * Create a predicate that excludes multiple webpack plugin constructor names.
  *
  * @param {string[]} pluginNames Plugin constructor names to exclude.
- * @return {Function} Predicate for `Array.prototype.filter`.
+ * @return {(plugin: Object) => boolean} Predicate for `Array.prototype.filter`.
  */
 const isNotOneOfPlugins = (pluginNames) => (plugin) =>
 	!pluginNames.includes(getPluginName(plugin));

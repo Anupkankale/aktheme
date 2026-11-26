@@ -50,7 +50,7 @@
 	"scripts": {
 		"phpcs": "@php ./vendor/bin/phpcs",
 		"phpcs:fix": "@php ./vendor/bin/phpcbf",
-		"phpstan": "phpstan analyse --memory-limit=1G",
+		"phpstan": "phpstan analyse --memory-limit=2G",
 		"post-install-cmd": [
 			"npm i"
 		],
