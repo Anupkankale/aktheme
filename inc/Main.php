@@ -51,6 +51,9 @@ class Main {
 		Modules\Blog\SinglePost::class,
 		Modules\Blog\AuthorProfile::class,
 		Modules\Abilities\Registrar::class,
+		Modules\AI\McpServer::class,
+		Modules\AI\Assistant::class,
+		Modules\AI\SettingsPage::class,
 	];
 
 	/**

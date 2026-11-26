@@ -52,18 +52,40 @@ schema rejects malformed input before anything runs. For example, a palette colo
 
 ## Connecting an AI agent (MCP)
 
-1. Install and activate the [MCP Adapter](https://github.com/WordPress/mcp-adapter) plugin. Its default server lists
-   every ability that has `meta.mcp.public`, which all of the theme's abilities have.
-2. Create an application password for a user with the right role. An Editor can change pages only. An Administrator
-   can also change the design, the header, the footer and the menus.
-3. Point the MCP client at `https://<site>/wp-json/mcp/mcp-adapter-default-server`, or run
-   `wp mcp-adapter serve --server=mcp-adapter-default-server` over STDIO.
+The theme has its own MCP server, so no plugin is needed. It uses the Streamable HTTP transport, at:
 
-The agent then uses the adapter's three tools: discover the abilities, get one ability's schema, and run it. Logging
-in is not the same as being allowed: each ability checks the user's capability when it runs.
+```
+https://<site>/wp-json/aktheme/v1/mcp
+```
 
-A good first prompt: *"Call aktheme/get-site-design and aktheme/list-building-blocks, then suggest changes before
+1. Create an application password (Users > Profile > Application Passwords) for a user with the right role. An Editor
+   can change pages only. An Administrator can also change the design, the header, the footer and the menus.
+   Application passwords need HTTPS, or a local site (`WP_ENVIRONMENT_TYPE` `local`).
+2. Connect the client. For Claude Code:
+
+   ```bash
+   claude mcp add --transport http aktheme https://<site>/wp-json/aktheme/v1/mcp \
+     --header "Authorization: Basic $(printf '%s' 'USERNAME:APPLICATION PASSWORD' | base64)"
+   ```
+
+   Appearance > AK AI shows the endpoint and this command with your username filled in. Any other MCP client that
+   speaks Streamable HTTP can connect with the same URL and `Authorization` header.
+
+Each ability is one tool, named with `__` in place of the `/` (`aktheme/update-page` becomes
+`aktheme__update-page`). Tools carry the ability's input schema and the read-only, destructive and idempotent hints. A
+tool call runs the ability like any other Abilities API client: core validates the input against the schema, and the
+ability checks the user's capability. Logging in is not the same as being allowed.
+
+A good first prompt: *"Call aktheme__get-site-design and aktheme__list-building-blocks, then suggest changes before
 making any."*
+
+The server is stateless and answers with JSON (no SSE stream). It handles `initialize`, `ping`, `tools/list` and
+`tools/call`. Turn it off with the **Serve the MCP endpoint** switch in Appearance > AK AI, the `mcp_enabled` setting,
+or the `aktheme_mcp_enabled` filter. The `aktheme_mcp_abilities` filter adds abilities from other namespaces.
+
+The abilities are still listed in core's `/wp-json/wp-abilities/v1` REST routes. They are also offered on the
+[MCP Adapter](https://github.com/WordPress/mcp-adapter) plugin's server if a site uses that plugin, but it is not
+required.
 
 ## Limiting what agents can do
 
@@ -71,7 +93,7 @@ Abilities that change something are destructive. To stop agents on MCP from maki
 production site, add this to a must-use plugin:
 
 ```php
-// Offer only the abilities that read over MCP.
+// Offer only the abilities that read over MCP (the theme's server and the MCP Adapter both honour this).
 add_filter( 'aktheme_abilities_mcp_public', fn ( bool $is_public, string $name, bool $is_readonly ) => $is_readonly, 10, 3 );
 ```
 
@@ -98,6 +120,9 @@ The site-specific behaviour that used to be hard-coded for one client is now in 
 | `blog_article_inserts` | `false` | Program card, skills banner and "Recommended reading" inside every blog post |
 | `company_linkedin_url` | `''`    | Author box link when the author's Website isn't a LinkedIn profile           |
 | `youtube_consent`      | `true`  | Ask before any YouTube player loads (gallery blocks and Embed blocks)        |
+| `ai_enabled`           | `true`  | The AI writing assistant in the editor ([AI writing assistant](ai-assistant.md)) |
+| `ai_model`             | `claude-opus-5-5` | The Claude model the assistant uses                                 |
+| `mcp_enabled`          | `true`  | The built-in MCP endpoint                                                     |
 
 Sites that ran the theme before 1.3.0 keep `blog_article_inserts` on (set once, on the first wp-admin visit). To lock
 a value per environment, use the `aktheme_setting` filter.
