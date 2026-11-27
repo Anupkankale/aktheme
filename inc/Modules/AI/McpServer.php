@@ -70,6 +70,35 @@ final class McpServer implements Registrable {
 	 */
 	public function register_hooks(): void {
 		add_action( 'rest_api_init', [ $this, 'register_routes' ] );
+		add_filter( 'rest_request_before_callbacks', [ $this, 'allow_parse_errors' ], 10, 3 );
+	}
+
+	/**
+	 * Let a malformed JSON body reach the handler, so the client gets a JSON-RPC parse error (-32700).
+	 *
+	 * Core refuses such a body with `rest_invalid_json` before any callback runs. Only that error, and only on this
+	 * route, is cleared: the permission check still runs.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param mixed                $response Response so far: a WP_Error when core refused the request.
+	 * @param array<string, mixed> $handler  Route handler.
+	 * @param WP_REST_Request      $request  Request.
+	 *
+	 * @phpstan-param WP_REST_Request<array<string, mixed>> $request
+	 *
+	 * @return mixed The response, or null to carry on to the handler.
+	 */
+	public function allow_parse_errors( mixed $response, array $handler, WP_REST_Request $request ): mixed {
+		if (
+			$response instanceof \WP_Error
+			&& 'rest_invalid_json' === $response->get_error_code()
+			&& '/' . self::NAMESPACE . self::ROUTE === $request->get_route()
+		) {
+			return null;
+		}
+
+		return $response;
 	}
 
 	/**
