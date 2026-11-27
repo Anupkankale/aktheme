@@ -12,7 +12,9 @@
 	"license": "GPL-2.0-or-later",
 	"require": {
 		"php": ">=8.2",
-		"rtcamp/wp-primitives": "^2.1.0"
+		"rtcamp/wp-primitives": "^2.1.0",
+		"anthropic-ai/sdk": "^1.14",
+		"nyholm/psr7": "^1.8"
 	},
 	"require-dev": {
 		"dealerdirect/phpcodesniffer-composer-installer": "1.2.1",
@@ -26,6 +28,9 @@
 		"wp-phpunit/wp-phpunit": "^7.1",
 		"yoast/phpunit-polyfills": "^3.0"
 	},
+	"provide": {
+		"psr/http-client-implementation": "1.0"
+	},
 	"minimum-stability": "dev",
 	"prefer-stable": true,
 	"config": {
@@ -34,7 +39,8 @@
 		},
 		"allow-plugins": {
 			"dealerdirect/phpcodesniffer-composer-installer": true,
-			"phpstan/extension-installer": true
+			"phpstan/extension-installer": true,
+			"php-http/discovery": false
 		}
 	},
 	"autoload": {

@@ -22,10 +22,22 @@ use rtCamp\WPPrimitives\Contracts\Interfaces\Registrable;
  * - `blog_article_inserts`: add the program card, skills banner and "Recommended reading" to every blog post.
  * - `company_linkedin_url`: the author box's LinkedIn link when the author has no LinkedIn profile of their own.
  * - `youtube_consent`: ask before any YouTube player loads (gallery blocks and Embed blocks).
+ * - `ai_enabled`, `ai_model`: the AI writing assistant in the editor. Its API key is NOT stored here (this option is
+ *   readable over REST); see {@see \AK\Theme\Modules\AI\ApiKey}.
+ * - `mcp_enabled`: the built-in MCP endpoint for AI agents.
  *
  * @since 1.3.0
  */
 class Settings implements Registrable {
+
+	/**
+	 * Claude models the AI assistant can use. The first one is the default.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @var list<string>
+	 */
+	public const AI_MODELS = [ 'claude-opus-5-5', 'claude-sonnet-5-5', 'claude-haiku-5-5', 'claude-fable-5-2' ];
 
 	/**
 	 * Option name.
@@ -66,13 +78,16 @@ class Settings implements Registrable {
 	 *
 	 * @since 1.3.0
 	 *
-	 * @return array{blog_article_inserts: bool, company_linkedin_url: string, youtube_consent: bool}
+	 * @return array{blog_article_inserts: bool, company_linkedin_url: string, youtube_consent: bool, ai_enabled: bool, ai_model: string, mcp_enabled: bool}
 	 */
 	public static function defaults(): array {
 		return [
 			'blog_article_inserts' => false,
 			'company_linkedin_url' => '',
 			'youtube_consent'      => true,
+			'ai_enabled'           => true,
+			'ai_model'             => self::AI_MODELS[0],
+			'mcp_enabled'          => true,
 		];
 	}
 
@@ -101,6 +116,19 @@ class Settings implements Registrable {
 				'youtube_consent'      => [
 					'type'        => 'boolean',
 					'description' => __( 'Ask visitors before a YouTube player loads (privacy, GDPR).', 'aktheme' ),
+				],
+				'ai_enabled'           => [
+					'type'        => 'boolean',
+					'description' => __( 'Show the AI writing assistant in the editor (needs an Anthropic API key, see Appearance > AK AI).', 'aktheme' ),
+				],
+				'ai_model'             => [
+					'type'        => 'string',
+					'enum'        => self::AI_MODELS,
+					'description' => __( 'Claude model used by the AI writing assistant.', 'aktheme' ),
+				],
+				'mcp_enabled'          => [
+					'type'        => 'boolean',
+					'description' => __( 'Serve the built-in MCP endpoint (/wp-json/aktheme/v1/mcp) so AI agents can use the theme abilities.', 'aktheme' ),
 				],
 			],
 		];
@@ -132,13 +160,13 @@ class Settings implements Registrable {
 	 *
 	 * @param mixed $value Submitted value.
 	 *
-	 * @return array{blog_article_inserts: bool, company_linkedin_url: string, youtube_consent: bool} Clean value.
+	 * @return array{blog_article_inserts: bool, company_linkedin_url: string, youtube_consent: bool, ai_enabled: bool, ai_model: string, mcp_enabled: bool} Clean value.
 	 */
 	public static function sanitize( $value ): array {
 		$value = is_array( $value ) ? $value : [];
 		$clean = self::all();
 
-		foreach ( [ 'blog_article_inserts', 'youtube_consent' ] as $key ) {
+		foreach ( [ 'blog_article_inserts', 'youtube_consent', 'ai_enabled', 'mcp_enabled' ] as $key ) {
 			if ( array_key_exists( $key, $value ) ) {
 				$clean[ $key ] = wp_validate_boolean( $value[ $key ] );
 			}
@@ -146,6 +174,10 @@ class Settings implements Registrable {
 
 		if ( array_key_exists( 'company_linkedin_url', $value ) ) {
 			$clean['company_linkedin_url'] = esc_url_raw( (string) $value['company_linkedin_url'], [ 'https' ] );
+		}
+
+		if ( array_key_exists( 'ai_model', $value ) && in_array( $value['ai_model'], self::AI_MODELS, true ) ) {
+			$clean['ai_model'] = (string) $value['ai_model'];
 		}
 
 		return $clean;
@@ -156,7 +188,7 @@ class Settings implements Registrable {
 	 *
 	 * @since 1.3.0
 	 *
-	 * @return array{blog_article_inserts: bool, company_linkedin_url: string, youtube_consent: bool} Settings.
+	 * @return array{blog_article_inserts: bool, company_linkedin_url: string, youtube_consent: bool, ai_enabled: bool, ai_model: string, mcp_enabled: bool} Settings.
 	 */
 	public static function all(): array {
 		$stored   = get_option( self::OPTION, [] );
@@ -167,6 +199,9 @@ class Settings implements Registrable {
 			'blog_article_inserts' => (bool) ( $stored['blog_article_inserts'] ?? $defaults['blog_article_inserts'] ),
 			'company_linkedin_url' => (string) ( $stored['company_linkedin_url'] ?? $defaults['company_linkedin_url'] ),
 			'youtube_consent'      => (bool) ( $stored['youtube_consent'] ?? $defaults['youtube_consent'] ),
+			'ai_enabled'           => (bool) ( $stored['ai_enabled'] ?? $defaults['ai_enabled'] ),
+			'ai_model'             => in_array( $stored['ai_model'] ?? null, self::AI_MODELS, true ) ? (string) $stored['ai_model'] : $defaults['ai_model'],
+			'mcp_enabled'          => (bool) ( $stored['mcp_enabled'] ?? $defaults['mcp_enabled'] ),
 		];
 	}
 

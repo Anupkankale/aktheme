@@ -5,7 +5,7 @@ blocks, the shared (synced) sections, the header, the footer and the templates, 
 replace per client.
 
 - **Author:** [Anup Kankale](https://anupkankale.com)
-- **Requires:** WordPress 6.6+ (6.9+ for the AI abilities), PHP 8.2+
+- **Requires:** WordPress 6.6+ (6.9+ for the AI abilities and MCP), PHP 8.2+
 - **License:** [GPL-2.0-or-later](LICENSE)
 
 ## What's in it
@@ -29,12 +29,17 @@ Header and footer menus are real WordPress menus (Appearance > Menus), seeded on
 Shared sections (offer banner, testimonials, CTA, achievements, photo) become synced patterns on the first admin visit,
 so one edit in Patterns > My patterns changes every page that uses them.
 
-## AI abilities
+## AI-enabled
 
-The design (colours, fonts, global styles), the header and footer, the menus, the shared sections and the pages can be
-read and changed through the WordPress Abilities API, for example by an AI agent connected through the MCP Adapter
-plugin. Changes are saved like Site Editor changes, with revisions, never in the theme's files. See
-[docs/abilities.md](docs/abilities.md).
+- **AI agents (MCP, no plugin needed).** The design (colours, fonts, global styles), the header and footer, the menus,
+  the shared sections and the pages are WordPress abilities. They are served as MCP tools by the theme's own endpoint,
+  `/wp-json/aktheme/v1/mcp`. Connect Claude Code or Claude Desktop with an application password. Changes are saved like
+  Site Editor changes, with revisions, never in the theme's files. See [docs/abilities.md](docs/abilities.md).
+- **AI writing assistant.** An "AK AI" panel and toolbar buttons in the editor write meta descriptions, title ideas,
+  sections, FAQs (with schema), rewrites and image alt text with Claude. It uses your Anthropic API key and loads
+  nothing on the front end. See [docs/ai-assistant.md](docs/ai-assistant.md).
+
+Both are configured in **Appearance > AK AI**.
 
 Site-specific behaviour (the blog article inserts, the company LinkedIn link, the YouTube consent notice) is in the
 theme settings (`aktheme_settings`), not in code: see the same page.
